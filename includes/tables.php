@@ -37,7 +37,7 @@ function create_surv_patient_table_on_activation() {
 			`job` text DEFAULT NULL,
 			`nationality` text DEFAULT NULL,
 			`gender` text DEFAULT NULL,
-			`identity` text DEFAULT NULL,
+			`identity` text NOT NULL UNIQUE,
 			`date_of_birth` text DEFAULT NULL,
 			`date_of_admission` text DEFAULT NULL,
 			`mobile_number` text DEFAULT NULL,
