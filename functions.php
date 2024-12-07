@@ -13,12 +13,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Define theme constants
+// Define theme constants.
 define( 'SURV_THEME_DIR', get_template_directory() );
 define( 'SURV_THEME_URL', get_template_directory_uri() );
 
-// Include necessary files
+// Include necessary files.
+require_once SURV_THEME_DIR . '/helpers.php';
 require_once SURV_THEME_DIR . '/includes/tables.php';
 require_once SURV_THEME_DIR . '/autoload.php';
 require_once SURV_THEME_DIR . '/routes/ajax-actions.php';
-
