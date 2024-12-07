@@ -17,11 +17,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 function insert_required_form_fields() {
 	$fields = array(
 		array(
-			'device_type_id' => 1, // Example device type ID for Ventilator
+			'device_type_id' => 1,
 			'field_name'     => 'site',
 			'field_type'     => 'radio',
 			'required'       => 1,
 			'options'        => array( 'R Subclavian', 'R Jugular', 'R Femoral', 'L Subclavian', 'L Jugular', 'L Femoral' ),
+		),
+		array(
+			'device_type_id' => 1,
+			'field_name'     => 'type_of_Catheter',
+			'field_type'     => 'radio',
+			'required'       => 1,
+			'options'        => array( 'Central Line', 'Arterial Line', 'Dialysis Catheter', 'PICC' ),
+		),
+		array(
+			'device_type_id' => 1,
+			'field_name'     => 'line_others',
+			'field_type'     => 'text',
+			'required'       => 0,
+			'options'        => array(),
+		),
+		array(
+			'device_type_id' => 2,
+			'field_name'     => 'catheter_type',
+			'field_type'     => 'radio',
+			'required'       => 1,
+			'options'        => array( 'Indwelling catheter', 'Condom catheter' ),
+		),
+
+		array(
+			'device_type_id' => 5,
+			'field_name'     => 'ventilator',
+			'field_type'     => 'text',
+			'required'       => 1,
+			'options'        => array(),
 		),
 	);
 

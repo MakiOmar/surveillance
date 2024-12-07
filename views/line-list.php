@@ -32,7 +32,62 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="col-9">
 		<div class="tab-content ps-2 bg-light-subtle" id="v-tabsContent">
 			<div class="tab-pane fade show active" id="device" role="tabpanel" aria-labelledby="device-tab">
-			<p>Content for Device tab.</p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<?php foreach ( $devicesWithFields as $deviceData ) : ?>
+						<?php
+						$device = $deviceData['device'];
+						$fields = $deviceData['fields'];
+						?>
+
+						<h3><?php echo esc_html( $device->label ); ?></h3>
+
+						<?php foreach ( $fields as $fieldData ) : ?>
+							<?php
+							$field   = $fieldData['field'];
+							$options = $fieldData['options'];
+							?>
+
+							<div class="form-group">
+								<label for="field_<?php echo esc_attr( $field->id ); ?>">
+									<?php echo esc_html( $field->field_name ); ?>
+									<?php if ( $field->required ) : ?>
+										<span style="color: red;">*</span>
+									<?php endif; ?>
+								</label>
+
+								<?php if ( $field->field_type === 'text' ) : ?>
+									<input
+										type="text"
+										name="fields[<?php echo esc_attr( $device->id ); ?>][<?php echo esc_attr( $field->id ); ?>]"
+										id="field_<?php echo esc_attr( $field->id ); ?>"
+										class="form-control"
+										required="<?php echo esc_attr( $field->required ? 'true' : 'false' ); ?>"
+									>
+								<?php elseif ( $field->field_type === 'radio' ) : ?>
+									<?php foreach ( $options as $option ) : ?>
+										<div class="form-check">
+											<input
+												type="radio"
+												name="fields[<?php echo esc_attr( $device->id ); ?>][<?php echo esc_attr( $field->id ); ?>]"
+												id="field_<?php echo esc_attr( $field->id . '_' . $option->id ); ?>"
+												value="<?php echo esc_attr( $option->option_value ); ?>"
+												class="form-check-input"
+											>
+											<label
+												class="form-check-label"
+												for="field_<?php echo esc_attr( $field->id . '_' . $option->id ); ?>"
+											>
+												<?php echo esc_html( $option->option_value ); ?>
+											</label>
+										</div>
+									<?php endforeach; ?>
+								<?php endif; ?>
+							</div>
+						<?php endforeach; ?>
+					<?php endforeach; ?>
+
+					<button type="submit" class="btn btn-primary">Save</button>
+				</form>
 			</div>
 			<div class="tab-pane fade" id="event" role="tabpanel" aria-labelledby="event-tab">
 			<p>Content for Event tab.</p>

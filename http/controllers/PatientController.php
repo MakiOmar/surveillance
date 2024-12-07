@@ -178,7 +178,7 @@ class PatientController extends BaseController {
 	/**
 	 * Line list view
 	 *
-	 * Fetches a patient by ID from the $_GET request and passes it to the view.
+	 * Fetches all devices and their fields for a specific patient.
 	 *
 	 * @return void
 	 */
@@ -201,7 +201,34 @@ class PatientController extends BaseController {
 			return;
 		}
 
-		// Load the view and pass the patient data.
-		$this->loadView( 'line-list', array( 'patient' => $patient ) );
+		// Fetch all available device types.
+		$devices = DeviceType::all(); // Replace with your device type model or method.
+
+		// Fetch fields and options for each device type.
+		$devicesWithFields = array();
+		foreach ( $devices as $device ) {
+			$fields = FormField::where( 'device_type_id', $device->_ID )->get();
+			$fieldsWithOptions = array();
+			foreach ( $fields as $field ) {
+				$fieldsWithOptions[] = array(
+					'field'   => $field,
+					'options' => $field->options(),
+				);
+			}
+
+			$devicesWithFields[] = array(
+				'device' => $device,
+				'fields' => $fieldsWithOptions,
+			);
+		}
+
+		// Load the view and pass the data.
+		$this->loadView(
+			'line-list',
+			array(
+				'patient'           => $patient,
+				'devicesWithFields' => $devicesWithFields,
+			)
+		);
 	}
 }
