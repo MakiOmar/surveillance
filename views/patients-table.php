@@ -40,8 +40,8 @@ if ( ! empty( $patients ) ) : ?>
 							class="btn btn-sm btn-primary" 
 							data-hx-post="<?php echo esc_url( admin_url( 'admin-ajax.php?action=toggle_surveillance_status' ) ); ?>" 
 							data-hx-include="[name=id]" 
-							data-hx-target="this" 
-							data-hx-swap="innerHTML"
+							data-hx-target="closest tr" 
+							data-hx-swap="outerHTML"
 							hx-confirm="Are you sure?">
 							<?php echo esc_html( 'under_surveillance' === $patient->status ? 'End' : 'Start' ); ?>
 						</button>

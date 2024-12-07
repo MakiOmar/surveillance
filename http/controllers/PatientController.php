@@ -120,8 +120,8 @@ class PatientController extends BaseController {
 
 			// Save the updated status.
 			$patient->save();
-			// Return the new button text.
-			echo 'under_surveillance' === $new_status ? 'End' : 'Start';
+			// Load the updated row view and pass the patient data to it.
+			$this->loadView( 'partials/patient-row', array( 'patient' => $patient ) );
 			exit;
 		} catch ( Exception $e ) {
 			// Handle exceptions and return an error response.
