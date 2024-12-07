@@ -115,20 +115,14 @@ class PatientController extends BaseController {
 			}
 
 			// Toggle the status.
-			$new_status      = $patient->status === 'under_surveillance' ? 'surveillance_completed' : 'under_surveillance';
+			$new_status      = 'under_surveillance' === $patient->status ? 'surveillance_completed' : 'under_surveillance';
 			$patient->status = $new_status;
 
 			// Save the updated status.
 			$patient->save();
-
-			// Return a success response with the new status.
-			$this->jsonResponse(
-				array(
-					'status'  => $new_status,
-					'message' => 'Status updated successfully',
-				),
-				200
-			);
+			// Return the new button text.
+			echo 'under_surveillance' === $new_status ? 'End' : 'Start';
+			exit;
 		} catch ( Exception $e ) {
 			// Handle exceptions and return an error response.
 			$this->jsonResponse( array( 'error' => $e->getMessage() ), 500 );
