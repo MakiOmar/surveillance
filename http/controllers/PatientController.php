@@ -89,4 +89,95 @@ class PatientController extends BaseController {
 			$this->jsonResponse( array( 'error' => $e->getMessage() ), 500 );
 		}
 	}
+
+	/**
+	 * Toggle the surveillance status of a patient.
+	 *
+	 * @return void Outputs a JSON response.
+	 */
+	public function toggleSurveillanceStatus() {
+		// Use $_POST as the data source.
+		$data = $_POST;
+
+		// Validate the record ID.
+		if ( empty( $data['id'] ) || ! is_numeric( $data['id'] ) ) {
+			$this->jsonResponse( array( 'error' => 'Invalid record ID' ), 400 );
+			return;
+		}
+
+		try {
+			// Fetch the patient record by ID.
+			$patient = PatientModel::find( intval( $data['id'] ) );
+
+			if ( ! $patient ) {
+				$this->jsonResponse( array( 'error' => 'Patient record not found' ), 404 );
+				return;
+			}
+
+			// Toggle the status.
+			$new_status      = $patient->status === 'under_surveillance' ? 'surveillance_completed' : 'under_surveillance';
+			$patient->status = $new_status;
+
+			// Save the updated status.
+			$patient->save();
+
+			// Return a success response with the new status.
+			$this->jsonResponse(
+				array(
+					'status'  => $new_status,
+					'message' => 'Status updated successfully',
+				),
+				200
+			);
+		} catch ( Exception $e ) {
+			// Handle exceptions and return an error response.
+			$this->jsonResponse( array( 'error' => $e->getMessage() ), 500 );
+		}
+	}
+
+	/**
+	 * Fetch paginated patients for display in a Bootstrap table.
+	 *
+	 * The output is handled by a separate view file.
+	 *
+	 * @return void Outputs the rendered view with paginated patient data.
+	 */
+	public function fetchPatients() {
+		try {
+			// Get the current page from the request, default to 1.
+			$page = isset( $_GET['page'] ) ? max( 1, intval( $_GET['page'] ) ) : 1;
+
+			// Define the number of records per page.
+			$per_page = 50;
+
+			// Calculate the offset for the query.
+			$offset = ( $page - 1 ) * $per_page;
+
+			// Fetch the paginated patient records.
+			$patients = PatientModel::offset( $offset )
+			->limit( $per_page )
+			->get();
+
+			// Get the total number of records for pagination.
+			$total_records = PatientModel::count();
+
+			// Calculate the total number of pages.
+			$total_pages = ceil( $total_records / $per_page );
+
+			// Prepare the data to be passed to the view.
+			$data = array(
+				'patients'      => $patients,
+				'current_page'  => $page,
+				'total_pages'   => $total_pages,
+				'per_page'      => $per_page,
+				'total_records' => $total_records,
+			);
+			// Load the view file and pass the data.
+			$this->loadView( 'patients-table', $data );
+
+		} catch ( Exception $e ) {
+			// Handle exceptions and display an error message in the view.
+			$this->loadView( 'error', array( 'error_message' => $e->getMessage() ) );
+		}
+	}
 }
