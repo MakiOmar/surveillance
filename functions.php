@@ -20,5 +20,6 @@ define( 'SURV_THEME_URL', get_template_directory_uri() );
 // Include necessary files.
 require_once SURV_THEME_DIR . '/helpers.php';
 require_once SURV_THEME_DIR . '/includes/tables.php';
+require_once SURV_THEME_DIR . '/includes/fields.php';
 require_once SURV_THEME_DIR . '/autoload.php';
 require_once SURV_THEME_DIR . '/routes/ajax-actions.php';
