@@ -1,9 +1,9 @@
 <?php
-	/**
-	 * Line list
-	 *
-	 * @package surv
-	 */
+/**
+ * Line list
+ *
+ * @package surv
+ */
 
 	// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
