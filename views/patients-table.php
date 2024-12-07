@@ -45,6 +45,7 @@ if ( ! empty( $patients ) ) : ?>
 							hx-confirm="Are you sure?">
 							<?php echo esc_html( 'under_surveillance' === $patient->status ? 'End' : 'Start' ); ?>
 						</button>
+						<a class="btn btn-sm btn-warning" href="<?php echo esc_url( add_query_arg( 'patient', $patient->id, home_url('/line-list') ) ); ?>">Line list</a>
 						<input type="hidden" name="id" value="<?php echo esc_attr( $patient->id ); ?>">
 					</td>
 				</tr>

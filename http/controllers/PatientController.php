@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Dbout\WpOrm\Models\Model;
+use Illuminate\Support\Arr;
 use TenQuality\WP\QueryBuilder\QueryBuilder;
 
 /**
@@ -173,5 +174,34 @@ class PatientController extends BaseController {
 			// Handle exceptions and display an error message in the view.
 			$this->loadView( 'error', array( 'error_message' => $e->getMessage() ) );
 		}
+	}
+	/**
+	 * Line list view
+	 *
+	 * Fetches a patient by ID from the $_GET request and passes it to the view.
+	 *
+	 * @return void
+	 */
+	public function lineList() {
+		// Get the patient ID from $_GET.
+		$id = isset( $_GET['patient'] ) ? intval( $_GET['patient'] ) : 0;
+
+		// Validate the ID.
+		if ( $id <= 0 ) {
+			echo '<p>Invalid patient ID provided.</p>';
+			return;
+		}
+
+		// Fetch the patient record by ID.
+		$patient = PatientModel::find( $id );
+
+		// Check if the patient exists.
+		if ( ! $patient ) {
+			echo '<p>Patient not found.</p>';
+			return;
+		}
+
+		// Load the view and pass the patient data.
+		$this->loadView( 'line-list', array( 'patient' => $patient ) );
 	}
 }
