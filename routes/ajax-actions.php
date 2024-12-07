@@ -12,3 +12,4 @@
 defined( 'ABSPATH' ) || exit;
 
 add_action( 'wp_ajax_insert_patient', array( new PatientController(), 'insertPatient' ) );
+add_action( 'wp_ajax_toggle_surveillance_status', array( new PatientController(), 'toggleSurveillanceStatus' ) );
