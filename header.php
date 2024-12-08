@@ -30,6 +30,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	.nav-tabs .nav-link:hover {
 		background-color: #0056b3; /* Hover effect for tabs */
 	}
+	.custom-gray-div {
+		background-color: #f8f9fa; /* Light gray */
+		border-radius: 15px; /* Custom border radius */
+		padding: 1.5rem;
+		border: 1px solid #dee2e6; /* Light border color */
+	}
 	</style>
 	<?php wp_head(); ?>
 </head>
