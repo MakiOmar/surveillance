@@ -195,6 +195,7 @@ function create_surv_patient_device_fields_table() {
 
 	// Define table name with the correct WordPress table prefix.
 	$table_name = $wpdb->prefix . 'surv_patient_device_fields';
+	$patient_table_name = $wpdb->prefix . 'surv_patient'; // Referenced table.
 
 	// Check if the table already exists.
 	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
@@ -208,9 +209,13 @@ function create_surv_patient_device_fields_table() {
 			`field_id` bigint(20) UNSIGNED NOT NULL,
 			`value` text NOT NULL,
 			`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (`id`),
-			KEY `patient_device_index` (`patient_id`, `device_id`)
+			KEY `patient_device_index` (`patient_id`, `device_id`),
+			CONSTRAINT `fk_patient_device_patient`
+				FOREIGN KEY (`patient_id`) REFERENCES `$patient_table_name`(`id`)
+				ON DELETE CASCADE
+				ON UPDATE CASCADE
 		) $charset_collate ENGINE=InnoDB;";
 
 		// Include the upgrade script.
@@ -220,6 +225,7 @@ function create_surv_patient_device_fields_table() {
 		dbDelta( $sql );
 	}
 }
+
 
 
 /**
