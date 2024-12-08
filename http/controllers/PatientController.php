@@ -210,8 +210,8 @@ class PatientController extends BaseController {
 			$fieldsWithOptions = array();
 			foreach ( $device->fields as $field ) {
 				// Check if there's an existing value for the patient.
-				$existingField = $patient->deviceFields
-					->where( 'device_id', $device->_ID )
+				$existingField = $patient->deviceFields()
+					->where( 'device_id', $device->id )
 					->where( 'field_id', $field->id )
 					->first();
 
@@ -227,7 +227,6 @@ class PatientController extends BaseController {
 				'fields' => $fieldsWithOptions,
 			);
 		}
-
 		// Load the view and pass the data.
 		$this->loadView(
 			'line-list',
