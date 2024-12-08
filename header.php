@@ -58,6 +58,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		padding: 1.5rem;
 		border: 1px solid #dee2e6; /* Light border color */
 	}
+	.alert{
+		margin: 5px 0;
+	}
 	</style>
 	<?php wp_head(); ?>
 </head>
