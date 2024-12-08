@@ -61,6 +61,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	.alert{
 		margin: 5px 0;
 	}
+	form{
+		max-width:768px;
+		margin:auto
+	}
 	</style>
 	<?php wp_head(); ?>
 </head>
