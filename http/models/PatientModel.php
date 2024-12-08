@@ -26,4 +26,12 @@ class PatientModel extends AbstractModel {
 		'entry',
 		'author_id',
 	);
+	/**
+	 * Device fields
+	 *
+	 * @return mixed
+	 */
+	public function deviceFields() {
+		return $this->hasMany( PatientDeviceField::class, 'patient_id', 'id' );
+	}
 }

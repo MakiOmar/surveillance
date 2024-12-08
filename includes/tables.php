@@ -19,16 +19,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  */
+
 function create_surv_patient_table() {
 	global $wpdb;
 
-	// Define table names with the correct WordPress table prefix.
 	$table_name  = $wpdb->prefix . 'surv_patient';
 	$users_table = $wpdb->prefix . 'users'; // WordPress users table.
 
-	// Check if the table already exists.
 	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-		// SQL to create the table.
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$sql = "CREATE TABLE `$table_name` (
@@ -42,24 +40,21 @@ function create_surv_patient_table() {
 			`address` text DEFAULT NULL,
 			`job` text DEFAULT NULL,
 			`nationality` text DEFAULT NULL,
-			`gender` text DEFAULT NULL,
-			`identity` text NOT NULL UNIQUE,
-			`date_of_birth` text DEFAULT NULL,
-			`date_of_admission` text DEFAULT NULL,
-			`mobile_number` text DEFAULT NULL,
+			`gender` ENUM('male', 'female', 'other') DEFAULT NULL,
+			`identity` varchar(50) NOT NULL UNIQUE,
+			`date_of_birth` date DEFAULT NULL,
+			`date_of_admission` date DEFAULT NULL,
+			`mobile_number` varchar(15) DEFAULT NULL,
 			`place_of_admission` text DEFAULT NULL,
 			`entry` text DEFAULT NULL,
 			`author_id` bigint(20) UNSIGNED DEFAULT NULL,
-			`created_at` datetime DEFAULT NULL,
-			`updated_at` datetime DEFAULT NULL,
+			`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (`id`),
 			CONSTRAINT `fk_author_id` FOREIGN KEY (`author_id`) REFERENCES `$users_table` (`ID`) ON DELETE SET NULL ON UPDATE CASCADE
 		) $charset_collate ENGINE=InnoDB;";
 
-		// Include the upgrade script.
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		// Execute the SQL query to create the table.
 		dbDelta( $sql );
 	}
 }
@@ -73,30 +68,23 @@ function create_surv_patient_table() {
 function create_surv_device_type_table() {
 	global $wpdb;
 
-	// Define table names with the correct WordPress table prefix.
 	$table_name = $wpdb->prefix . 'surv_device_type';
 
-	// Check if the table already exists.
 	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-		// SQL to create the table.
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$sql = "CREATE TABLE `$table_name` (
 			`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-			`label` varchar(20) NOT NULL,
-			`created_at` datetime DEFAULT NULL,
-			`updated_at` datetime DEFAULT NULL,
+			`label` varchar(50) NOT NULL,
+			`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (`id`)
 		) $charset_collate ENGINE=InnoDB;";
 
-		// Include the upgrade script.
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		// Execute the SQL query to create the table.
 		dbDelta( $sql );
 	}
 }
-
 /**
  * Create the `surv_patient_device_connections` table upon theme activation.
  *
@@ -107,29 +95,27 @@ function create_surv_device_type_table() {
 function create_surv_patient_device_connections_table() {
 	global $wpdb;
 
-	// Define the table name with the correct WordPress table prefix.
-	$table_name = $wpdb->prefix . 'surv_patient_device_connections';
+	$table_name  = $wpdb->prefix . 'surv_patient_device_connections';
+	$patient_table = $wpdb->prefix . 'surv_patient';
+	$device_type_table = $wpdb->prefix . 'surv_device_type';
 
-	// Check if the table already exists.
 	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
-		// SQL to create the table.
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$sql = "CREATE TABLE `$table_name` (
 			`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			`patient_id` bigint(20) UNSIGNED NOT NULL,
 			`device_type_id` bigint(20) UNSIGNED NOT NULL,
-			`connected_at` datetime DEFAULT NULL,
+			`connected_at` datetime DEFAULT CURRENT_TIMESTAMP,
 			`disconnected_at` datetime DEFAULT NULL,
 			PRIMARY KEY (`id`),
 			KEY `patient_id` (`patient_id`),
-			KEY `device_type_id` (`device_type_id`)
+			KEY `device_type_id` (`device_type_id`),
+			CONSTRAINT `fk_patient_id` FOREIGN KEY (`patient_id`) REFERENCES `$patient_table` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+			CONSTRAINT `fk_device_type_id` FOREIGN KEY (`device_type_id`) REFERENCES `$device_type_table` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 		) $charset_collate ENGINE=InnoDB;";
 
-		// Include the upgrade script.
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		// Execute the SQL query to create the table.
 		dbDelta( $sql );
 	}
 }
@@ -151,18 +137,20 @@ function create_surv_form_fields_table() {
 			`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			`device_type_id` bigint(20) UNSIGNED NOT NULL,
 			`field_name` varchar(255) NOT NULL,
-			`field_type` enum('text', 'textarea', 'dropdown', 'radio', 'checkbox') NOT NULL,
+			`field_type` ENUM('text', 'textarea', 'dropdown', 'radio', 'checkbox') NOT NULL,
 			`required` tinyint(1) NOT NULL DEFAULT 0,
-			`created_at` datetime DEFAULT NULL,
-			`updated_at` datetime DEFAULT NULL,
+			`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (`id`),
-			KEY `device_type_id` (`device_type_id`)
+			KEY `device_type_id` (`device_type_id`),
+			CONSTRAINT `fk_device_type_field` FOREIGN KEY (`device_type_id`) REFERENCES `{$wpdb->prefix}surv_device_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 		) $charset_collate ENGINE=InnoDB;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
 	}
 }
+
 
 /**
  * Create the `surv_form_field_options` table upon theme activation.
@@ -173,6 +161,7 @@ function create_surv_form_field_options_table() {
 	global $wpdb;
 
 	$table_name = $wpdb->prefix . 'surv_form_field_options';
+	$form_fields_table = $wpdb->prefix . 'surv_form_fields';
 
 	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
 		$charset_collate = $wpdb->get_charset_collate();
@@ -181,16 +170,18 @@ function create_surv_form_field_options_table() {
 			`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			`field_id` bigint(20) UNSIGNED NOT NULL,
 			`option_value` varchar(255) NOT NULL,
-			`created_at` datetime DEFAULT NULL,
-			`updated_at` datetime DEFAULT NULL,
+			`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (`id`),
-			KEY `field_id` (`field_id`)
+			KEY `field_id` (`field_id`),
+			CONSTRAINT `fk_field_id` FOREIGN KEY (`field_id`) REFERENCES `$form_fields_table` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 		) $charset_collate ENGINE=InnoDB;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
 	}
 }
+
 
 /**
  * Create the `surv_patient_device_fields` table upon theme activation.
@@ -238,7 +229,6 @@ function create_surv_patient_device_fields_table() {
  */
 function surv_tables() {
 	create_surv_patient_table();
-	create_surv_patient_device_connections_table();
 	create_surv_form_fields_table();
 	create_surv_form_field_options_table();
 	create_surv_patient_device_fields_table();

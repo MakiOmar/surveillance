@@ -192,8 +192,8 @@ class PatientController extends BaseController {
 			return;
 		}
 
-		// Fetch the patient record by ID.
-		$patient = PatientModel::find( $id );
+		// Fetch the patient record with related device fields by ID.
+		$patient = PatientModel::with( 'deviceFields' )->find( $id );
 
 		// Check if the patient exists.
 		if ( ! $patient ) {
@@ -201,18 +201,24 @@ class PatientController extends BaseController {
 			return;
 		}
 
-		// Fetch all available device types.
-		$devices = DeviceType::all(); // Replace with your device type model or method.
+		// Fetch all available device types along with their fields and options.
+		$devices = DeviceType::with( 'fields.options' )->get();
 
-		// Fetch fields and options for each device type.
+		// Prepare devices and fields with prefilled values.
 		$devicesWithFields = array();
 		foreach ( $devices as $device ) {
-			$fields            = FormField::where( 'device_type_id', $device->_ID )->get();
 			$fieldsWithOptions = array();
-			foreach ( $fields as $field ) {
+			foreach ( $device->fields as $field ) {
+				// Check if there's an existing value for the patient.
+				$existingField = $patient->deviceFields
+					->where( 'device_id', $device->_ID )
+					->where( 'field_id', $field->id )
+					->first();
+
 				$fieldsWithOptions[] = array(
 					'field'   => $field,
-					'options' => $field->options(),
+					'options' => $field->options,
+					'value'   => $existingField ? $existingField->value : null, // Prefill value if exists.
 				);
 			}
 
@@ -232,6 +238,7 @@ class PatientController extends BaseController {
 		);
 	}
 
+
 	/**
 	 * Handle device connection and save field values.
 	 */
@@ -245,36 +252,54 @@ class PatientController extends BaseController {
 
 		// Validate IDs.
 		if ( $patient_id <= 0 ) {
-			echo '<p class="alert alert-error">patient ID.</p>';
+			echo '<p class="alert alert-error">Invalid patient ID</p>';
 			die;
 		}
+
 		// Initialize a flag for success status.
 		$all_saved = true;
+
 		// Process each field value.
 		foreach ( $_POST['fields'] as $device_id => $fields ) {
 			foreach ( $fields as $field_id => $value ) {
-				$patientDeviceField             = new PatientDeviceField();
-				$patientDeviceField->patient_id = $patient_id;
-				$patientDeviceField->device_id  = $device_id;
-				$patientDeviceField->field_id   = $field_id;
-				$patientDeviceField->value      = $value;
-				$patientDeviceField->created_at = current_time( 'mysql' );
-				$patientDeviceField->updated_at = current_time( 'mysql' );
-				// Attempt to save and check for success.
-				if ( ! $patientDeviceField->save() ) {
-					$all_saved = false;
+				// Check if the record exists.
+				$existingRecord = PatientDeviceField::where( 'patient_id', $patient_id )
+					->where( 'device_id', $device_id )
+					->where( 'field_id', $field_id )
+					->first();
 
-					// Log the failure.
-					error_log( "Failed to save field ID: {$field_id} for device ID: {$device_id}, patient ID: {$patient_id}" );
+				if ( $existingRecord ) {
+					// Update the existing record.
+					$existingRecord->value      = $value;
+					$existingRecord->updated_at = current_time( 'mysql' );
+
+					if ( ! $existingRecord->save() ) {
+						$all_saved = false;
+						error_log( "Failed to update field ID: {$field_id} for device ID: {$device_id}, patient ID: {$patient_id}" );
+					}
+				} else {
+					// Create a new record if it doesn't exist.
+					$patientDeviceField             = new PatientDeviceField();
+					$patientDeviceField->patient_id = $patient_id;
+					$patientDeviceField->device_id  = $device_id;
+					$patientDeviceField->field_id   = $field_id;
+					$patientDeviceField->value      = $value;
+					$patientDeviceField->created_at = current_time( 'mysql' );
+					$patientDeviceField->updated_at = current_time( 'mysql' );
+
+					if ( ! $patientDeviceField->save() ) {
+						$all_saved = false;
+						error_log( "Failed to save field ID: {$field_id} for device ID: {$device_id}, patient ID: {$patient_id}" );
+					}
 				}
 			}
 		}
 
 		// Check overall success.
 		if ( $all_saved ) {
-			echo '<p class="alert alert-success">Device connected successfully and field values saved!</p>';
+			echo '<p class="alert alert-success">Data has been submitted successfully</p>';
 		} else {
-			echo '<p class="alert alert-danger">Some fields failed to save. Please check the logs.</p>';
+			echo '<p class="alert alert-danger">Some fields failed to save or update. Please check the logs.</p>';
 		}
 		die();
 	}

@@ -31,15 +31,6 @@ class FormField extends AbstractModel {
 	);
 
 	/**
-	 * Define the relationship with form field options.
-	 *
-	 * @return array|object|null
-	 */
-	public function options() {
-		return FormFieldOption::where( 'field_id', $this->id )->get();
-	}
-
-	/**
 	 * Check if a field exists for the given device_type_id and field_name.
 	 *
 	 * @param int    $deviceTypeId
@@ -50,5 +41,13 @@ class FormField extends AbstractModel {
 		return self::where( 'device_type_id', $deviceTypeId )
 			->where( 'field_name', $fieldName )
 			->exists();
+	}
+	/**
+	 * Define the relationship with form field options.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function options() {
+		return $this->hasMany( FormFieldOption::class, 'field_id', 'id' );
 	}
 }

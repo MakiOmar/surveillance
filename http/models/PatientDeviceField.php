@@ -21,30 +21,22 @@ class PatientDeviceField extends AbstractModel {
 		'updated_at',
 	);
 
-	/**
-	 * Get the associated patient.
-	 *
-	 * @return object|null
-	 */
-	public function patient() {
-		return PatientModel::find( $this->patient_id );
-	}
 
-	/**
-	 * Get the associated device.
-	 *
-	 * @return object|null
-	 */
-	public function device() {
-		return DeviceType::find( $this->device_id );
-	}
 
 	/**
 	 * Get the associated field.
 	 *
-	 * @return object|null
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
 	public function field() {
-		return FormField::find( $this->field_id );
+		return $this->belongsTo( FormField::class, 'field_id', 'id' );
+	}
+
+	public function patient() {
+		return $this->belongsTo( PatientModel::class, 'patient_id', 'id' );
+	}
+
+	public function device() {
+		return $this->belongsTo( DeviceType::class, 'device_id', 'id' );
 	}
 }

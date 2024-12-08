@@ -39,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					if ( empty( $fields ) ) {
 						continue;
 					}
-					$device_id = esc_attr( $device->_ID );
+					$device_id = esc_attr( $device->id );
 					?>
 					<h3 class="mt-4"><?php echo esc_html( $device->label ); ?></h3>
 					<form method="post" id="device_<?php echo $device_id; ?>" class="container">
@@ -62,7 +62,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										<?php if ( 'text' === $field->field_type ) : ?>
 											<input
 												type="text"
-												name="fields[<?php echo esc_attr( $device->_ID ); ?>][<?php echo esc_attr( $field->id ); ?>]"
+												name="fields[<?php echo esc_attr( $device->id ); ?>][<?php echo esc_attr( $field->id ); ?>]"
 												id="field_<?php echo esc_attr( $field->id ); ?>"
 												class="form-control"
 												required="<?php echo esc_attr( $field->required ? 'true' : 'false' ); ?>"
@@ -72,7 +72,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 												<div class="form-check">
 													<input
 														type="radio"
-														name="fields[<?php echo esc_attr( $device->_ID ); ?>][<?php echo esc_attr( $field->id ); ?>]"
+														name="fields[<?php echo esc_attr( $device->id ); ?>][<?php echo esc_attr( $field->id ); ?>]"
 														id="field_<?php echo esc_attr( $field->id . '_' . $option->id ); ?>"
 														value="<?php echo esc_attr( $option->option_value ); ?>"
 														class="form-check-input"
@@ -98,6 +98,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							hx-target="#device_response_<?php echo $device_id; ?>"
 							hx-headers='{"Content-Type": "application/x-www-form-urlencoded"}'
 							hx-swap="innerHTML"
+							hx-indicator="maglev-loading-indicator"
 						>
 							Connect Device
 						</button>
