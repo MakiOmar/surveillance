@@ -69,3 +69,21 @@ function redirect_to_wp_login_if_not_logged_in() {
 	}
 }
 add_action( 'template_redirect', 'redirect_to_wp_login_if_not_logged_in' );
+
+
+/**
+ * Restrict access to the WordPress admin dashboard to administrators only.
+ *
+ * Redirects non-administrators to the home page or another specified page.
+ *
+ * @return void
+ */
+function restrict_dashboard_access() {
+	// Check if the current user is trying to access the admin dashboard.
+	if ( is_admin() && ! current_user_can( 'manage_options' ) ) {
+		// Redirect non-administrators to the home page.
+		wp_safe_redirect( home_url( '/start-surv' ) );
+		exit; // Stop further script execution after the redirect.
+	}
+}
+add_action( 'admin_init', 'restrict_dashboard_access' );
