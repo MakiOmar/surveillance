@@ -44,7 +44,7 @@ add_action(
 	'wp_login',
 	function ( $user_login, $user ) {
 		// Check if the user has the 'nurse' role.
-		if ( in_array( 'nurse', (array) $user->roles, true ) ) {
+		if ( in_array( 'anti-infection', (array) $user->roles, true ) || in_array( 'nurse', (array) $user->roles, true ) ) {
 			// Redirect to 'start-surv' page.
 			wp_safe_redirect( home_url( '/start-surv' ) );
 			exit;
