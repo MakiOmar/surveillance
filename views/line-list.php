@@ -101,7 +101,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						hx-target="#device_response_<?php echo $device_id; ?>"
 						hx-headers='{"Content-Type": "application/x-www-form-urlencoded"}'
 						hx-swap="innerHTML"
-						hx-indicator="maglev-loading-indicator"
+						hx-indicator="#maglev-loading-indicator"
 					>
 						Connect Device
 					</button>

@@ -26,9 +26,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			data-hx-post="<?php echo esc_url( admin_url( 'admin-ajax.php?action=toggle_surveillance_status' ) ); ?>" 
 			data-hx-target="closest tr" 
 			data-hx-swap="outerHTML"
+			hx-indicator="#maglev-loading-indicator"
 			data-hx-include="[name=id]">
 			<?php echo esc_html( 'under_surveillance' === $patient->status ? 'End' : 'Start' ); ?>
 		</button>
+		<a class="btn btn-sm btn-warning" href="<?php echo esc_url( add_query_arg( 'patient', $patient->id, home_url( '/line-list' ) ) ); ?>">Line list</a>
 		<input type="hidden" name="id" value="<?php echo esc_attr( $patient->id ); ?>">
 	</td>
 </tr>

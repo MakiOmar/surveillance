@@ -42,6 +42,7 @@ if ( ! empty( $patients ) ) : ?>
 							data-hx-include="[name=id]" 
 							data-hx-target="closest tr" 
 							data-hx-swap="outerHTML"
+							hx-indicator="#maglev-loading-indicator"
 							hx-confirm="Are you sure?">
 							<?php echo esc_html( 'under_surveillance' === $patient->status ? 'End' : 'Start' ); ?>
 						</button>
