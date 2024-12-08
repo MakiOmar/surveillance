@@ -47,7 +47,7 @@ function insert_required_form_fields() {
 
 		array(
 			'device_type_id' => 5,
-			'field_name'     => 'ventilator',
+			'field_name'     => 'mode',
 			'field_type'     => 'text',
 			'required'       => 1,
 			'options'        => array(),
