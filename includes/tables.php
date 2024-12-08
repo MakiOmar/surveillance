@@ -193,6 +193,45 @@ function create_surv_form_field_options_table() {
 }
 
 /**
+ * Create the `surv_patient_device_fields` table upon theme activation.
+ *
+ * This function checks if the table already exists and creates it if not.
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
+ */
+function create_surv_patient_device_fields_table() {
+	global $wpdb;
+
+	// Define table name with the correct WordPress table prefix.
+	$table_name = $wpdb->prefix . 'surv_patient_device_fields';
+
+	// Check if the table already exists.
+	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
+		// SQL to create the table.
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$sql = "CREATE TABLE `$table_name` (
+			`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			`patient_id` bigint(20) UNSIGNED NOT NULL,
+			`device_id` bigint(20) UNSIGNED NOT NULL,
+			`field_id` bigint(20) UNSIGNED NOT NULL,
+			`value` text NOT NULL,
+			`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (`id`),
+			KEY `patient_device_index` (`patient_id`, `device_id`)
+		) $charset_collate ENGINE=InnoDB;";
+
+		// Include the upgrade script.
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		// Execute the SQL query to create the table.
+		dbDelta( $sql );
+	}
+}
+
+
+/**
  * Tabels init
  *
  * @return void
@@ -202,6 +241,7 @@ function surv_tables() {
 	create_surv_patient_device_connections_table();
 	create_surv_form_fields_table();
 	create_surv_form_field_options_table();
+	create_surv_patient_device_fields_table();
 }
 
 // Register the activation hook.
