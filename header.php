@@ -11,6 +11,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title><?php wp_title( '|', true, 'right' ); ?><?php bloginfo( 'name' ); ?></title>
 	<style>
+	.surv-navbar {
+		background-color: #343a40; /* Dark background */
+		padding: 0.8rem 1rem;
+	}
+	.surv-navbar .nav-link {
+		color: #ffffff; /* White text */
+		transition: color 0.3s ease-in-out;
+	}
+	.surv-navbar .nav-link:hover {
+		color: #1bc5bd; /* Custom hover color */
+	}
+	.surv-navbar .navbar-brand {
+		color: #ffa800; /* Custom brand color */
+		font-weight: bold;
+		transition: color 0.3s ease-in-out;
+	}
+	.surv-navbar .navbar-brand:hover {
+		color: #ffffff; /* Hover to white */
+	}
+	.surv-navbar-toggler {
+		border-color: #ffa800; /* Custom toggler border color */
+	}
 	/* Custom background for the navigation container */
 	.nav-tabs {
 		background-color: #007bff; /* Blue background */
@@ -40,3 +62,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
+	<nav class="navbar navbar-expand-lg surv-navbar">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">Surveillance system</a>
+			<button class="navbar-toggler surv-navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#survNavbar" aria-controls="survNavbar" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="survNavbar">
+				<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a class="nav-link" href="/start-surv">Add patient</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/patients">Patients</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Services</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Contact</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
