@@ -5,7 +5,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
-
+//phpcs:disable WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 use Dbout\WpOrm\Models\Model;
 use Illuminate\Support\Arr;
 use TenQuality\WP\QueryBuilder\QueryBuilder;
@@ -207,7 +207,7 @@ class PatientController extends BaseController {
 		// Fetch fields and options for each device type.
 		$devicesWithFields = array();
 		foreach ( $devices as $device ) {
-			$fields = FormField::where( 'device_type_id', $device->_ID )->get();
+			$fields            = FormField::where( 'device_type_id', $device->_ID )->get();
 			$fieldsWithOptions = array();
 			foreach ( $fields as $field ) {
 				$fieldsWithOptions[] = array(
@@ -230,5 +230,52 @@ class PatientController extends BaseController {
 				'devicesWithFields' => $devicesWithFields,
 			)
 		);
+	}
+
+	/**
+	 * Handle device connection and save field values.
+	 */
+	public function connect_device() {
+		if ( ! isset( $_POST['fields'] ) || ! is_array( $_POST['fields'] ) ) {
+			echo '<p class="alert alert-error">Missing fields data</p>';
+			die;
+		}
+
+		$patient_id = intval( $_POST['patient-id'] );
+
+		// Validate IDs.
+		if ( $patient_id <= 0 ) {
+			echo '<p class="alert alert-error">patient ID.</p>';
+			die;
+		}
+		// Initialize a flag for success status.
+		$all_saved = true;
+		// Process each field value.
+		foreach ( $_POST['fields'] as $device_id => $fields ) {
+			foreach ( $fields as $field_id => $value ) {
+				$patientDeviceField             = new PatientDeviceField();
+				$patientDeviceField->patient_id = $patient_id;
+				$patientDeviceField->device_id  = $device_id;
+				$patientDeviceField->field_id   = $field_id;
+				$patientDeviceField->value      = $value;
+				$patientDeviceField->created_at = current_time( 'mysql' );
+				$patientDeviceField->updated_at = current_time( 'mysql' );
+				// Attempt to save and check for success.
+				if ( ! $patientDeviceField->save() ) {
+					$all_saved = false;
+
+					// Log the failure.
+					error_log( "Failed to save field ID: {$field_id} for device ID: {$device_id}, patient ID: {$patient_id}" );
+				}
+			}
+		}
+
+		// Check overall success.
+		if ( $all_saved ) {
+			echo '<p class="alert alert-success">Device connected successfully and field values saved!</p>';
+		} else {
+			echo '<p class="alert alert-danger">Some fields failed to save. Please check the logs.</p>';
+		}
+		die();
 	}
 }
