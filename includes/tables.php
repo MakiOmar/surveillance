@@ -19,7 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  */
-
 function create_surv_patient_table() {
 	global $wpdb;
 
@@ -59,6 +58,38 @@ function create_surv_patient_table() {
 	}
 }
 /**
+ * Create the `surveillances` table upon theme activation.
+ *
+ * This function checks if the table already exists and creates it if not.
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
+ */
+
+function create_surveillances_table() {
+	global $wpdb;
+
+	$surveillances_table = $wpdb->prefix . 'surveillances';
+	$surv_patient_table  = $wpdb->prefix . 'surv_patient'; // The surv_patient table.
+
+	if ( $wpdb->get_var( "SHOW TABLES LIKE '$surveillances_table'" ) !== $surveillances_table ) {
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$sql = "CREATE TABLE `$surveillances_table` (
+			`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			`patient_id` bigint(20) UNSIGNED NOT NULL,
+			`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+			`ended_at` datetime DEFAULT NULL,
+			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY (`id`),
+			CONSTRAINT `fk_patient_id` FOREIGN KEY (`patient_id`) REFERENCES `$surv_patient_table` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		) $charset_collate ENGINE=InnoDB;";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $sql );
+	}
+}
+
+/**
  * Create the `surv_device_type` table upon theme activation.
  *
  * This function checks if the table already exists and creates it if not.
@@ -95,8 +126,8 @@ function create_surv_device_type_table() {
 function create_surv_patient_device_connections_table() {
 	global $wpdb;
 
-	$table_name  = $wpdb->prefix . 'surv_patient_device_connections';
-	$patient_table = $wpdb->prefix . 'surv_patient';
+	$table_name        = $wpdb->prefix . 'surv_patient_device_connections';
+	$patient_table     = $wpdb->prefix . 'surv_patient';
 	$device_type_table = $wpdb->prefix . 'surv_device_type';
 
 	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
@@ -160,7 +191,7 @@ function create_surv_form_fields_table() {
 function create_surv_form_field_options_table() {
 	global $wpdb;
 
-	$table_name = $wpdb->prefix . 'surv_form_field_options';
+	$table_name        = $wpdb->prefix . 'surv_form_field_options';
 	$form_fields_table = $wpdb->prefix . 'surv_form_fields';
 
 	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
@@ -194,7 +225,7 @@ function create_surv_patient_device_fields_table() {
 	global $wpdb;
 
 	// Define table name with the correct WordPress table prefix.
-	$table_name = $wpdb->prefix . 'surv_patient_device_fields';
+	$table_name         = $wpdb->prefix . 'surv_patient_device_fields';
 	$patient_table_name = $wpdb->prefix . 'surv_patient'; // Referenced table.
 
 	// Check if the table already exists.
@@ -238,6 +269,7 @@ function surv_tables() {
 	create_surv_form_fields_table();
 	create_surv_form_field_options_table();
 	create_surv_patient_device_fields_table();
+	create_surveillances_table();
 }
 
 // Register the activation hook.

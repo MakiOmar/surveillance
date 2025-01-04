@@ -38,7 +38,7 @@ if ( ! empty( $patients ) ) : ?>
 					<td>
 						<button 
 							class="btn btn-sm <?php echo esc_html( 'under_surveillance' === $patient->status ? 'btn-danger' : 'btn-success' ); ?>" 
-							data-hx-post="<?php echo esc_url( admin_url( 'admin-ajax.php?action=toggle_surveillance_status') ); ?>" 
+							data-hx-post="<?php echo esc_url( admin_url( 'admin-ajax.php?action=toggle_surveillance_status' ) ); ?>" 
 							data-hx-vals='{"id": "<?php echo esc_js( $patient->id ); ?>"}'
 							data-hx-target="closest tr" 
 							data-hx-swap="outerHTML"

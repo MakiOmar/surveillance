@@ -34,4 +34,8 @@ class PatientModel extends AbstractModel {
 	public function deviceFields() {
 		return $this->hasMany( PatientDeviceField::class, 'patient_id', 'id' );
 	}
+	public function surveillances() {
+		return $this->hasMany(SurveillanceModel::class, 'patient_id', 'id');
+	}
+	
 }

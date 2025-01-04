@@ -121,8 +121,26 @@ class PatientController extends BaseController {
 
 			// Save the updated status.
 			$patient->save();
+			// If the new status is `under_surveillance`, insert a new row in the `surveillances` table.
+			if ( 'under_surveillance' === $new_status ) {
+				$patient->surveillances()->create();
+			} else {
+				// Update the latest surveillance with ended_at = NULL to the current datetime.
+				$latest_surveillance = SurveillanceModel::getLatestActiveSurveillance( $patient->id );
+
+				if ( $latest_surveillance ) {
+					$latest_surveillance->ended_at = current_time( 'mysql' ); // WordPress current datetime.
+					$latest_surveillance->save();
+				}
+			}
+
 			// Load the updated row view and pass the patient data to it.
-			$this->loadView( 'partials/patient-row', array( 'patient' => $patient ) );
+			$this->loadView(
+				'partials/patient-row',
+				array(
+					'patient' => $patient,
+				)
+			);
 			exit;
 		} catch ( Exception $e ) {
 			// Handle exceptions and return an error response.
@@ -152,7 +170,14 @@ class PatientController extends BaseController {
 			$patients = PatientModel::offset( $offset )
 			->limit( $per_page )
 			->get();
-
+			// Map patients to include the latest surveillance with ended_at = NULL or 0 if none.
+			$patients_with_surveillance = $patients->map(
+				function ( $patient ) {
+					$latest_surveillance      = SurveillanceModel::getLatestActiveSurveillance( $patient->id );
+					$patient->surveillance_id = $latest_surveillance ? $latest_surveillance->id : 0;
+					return $patient;
+				}
+			);
 			// Get the total number of records for pagination.
 			$total_records = PatientModel::count();
 
@@ -161,7 +186,7 @@ class PatientController extends BaseController {
 
 			// Prepare the data to be passed to the view.
 			$data = array(
-				'patients'      => $patients,
+				'patients'      => $patients_with_surveillance,
 				'current_page'  => $page,
 				'total_pages'   => $total_pages,
 				'per_page'      => $per_page,
