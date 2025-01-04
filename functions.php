@@ -61,6 +61,9 @@ add_action(
  * @return void
  */
 function redirect_to_wp_login_if_not_logged_in() {
+	if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
+		return;
+	}
 	// Check if the user is not logged in and not already on the login page.
 	if ( ! is_user_logged_in() && ! is_page( 'wp-login.php' ) ) {
 		// Redirect to the wp-login.php page.
@@ -79,6 +82,9 @@ add_action( 'template_redirect', 'redirect_to_wp_login_if_not_logged_in' );
  * @return void
  */
 function restrict_dashboard_access() {
+	if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
+		return;
+	}
 	// Check if the current user is trying to access the admin dashboard.
 	if ( is_admin() && ! current_user_can( 'manage_options' ) ) {
 		// Redirect non-administrators to the home page.
