@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Dbout\WpOrm\Models\Model;
 use Illuminate\Support\Arr;
 use TenQuality\WP\QueryBuilder\QueryBuilder;
+use Carbon\Carbon;
 
 /**
  * Class PatientController
@@ -175,6 +176,23 @@ class PatientController extends BaseController {
 				function ( $patient ) {
 					$latest_surveillance      = SurveillanceModel::getLatestActiveSurveillance( $patient->id );
 					$patient->surveillance_id = $latest_surveillance ? $latest_surveillance->id : 0;
+
+					// Calculate surveillance_days_count using Carbon.
+					if ( $latest_surveillance ) {
+						$created_at   = Carbon::createFromFormat( 'Y-m-d H:i:s', $latest_surveillance->created_at );
+						$current_time = Carbon::now(); // Get current time.
+						$days         = $created_at->diffInDays( $current_time, false ); // Calculate difference in days.
+
+						// Check for fractional day and ceil it up.
+						if ( $created_at->diffInHours( $current_time, false ) % 24 > 0 ) {
+							$days++;
+						}
+
+						$patient->surveillance_days_count = $days;
+					} else {
+						$patient->surveillance_days_count = 0;
+					}
+
 					return $patient;
 				}
 			);

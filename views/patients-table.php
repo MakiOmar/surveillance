@@ -31,7 +31,7 @@ if ( ! empty( $patients ) ) : ?>
 					<td><?php echo esc_html( $patient->code ); ?></td>
 					<td><?php echo esc_html( trim( $patient->first_name . ' ' . $patient->second_name . ' ' . $patient->last_name ) ); ?></td>
 					<td><?php echo esc_html( $patient->gender ); ?></td>
-					<td></td> <!-- Placeholder for Device Surveillance Days -->
+					<td><?php echo esc_html( $patient->surveillance_days_count ); ?></td>
 					<td><?php echo esc_html( 'under_surveillance' === $patient->status ? 'Yes' : 'No' ); ?></td>
 					<td><?php echo esc_html( $patient->created_at ? $patient->created_at->format( 'Y-m-d' ) : '' ); ?></td>
 					<td>No</td> <!-- Static for now -->
