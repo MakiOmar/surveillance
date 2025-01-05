@@ -10,10 +10,10 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly.
 
 /**
- * Generate a unique code for the surv_patient table.
+ * Generate a unique numeric code for the surv_patient table.
  *
- * This function generates a unique code in the format 'PAT-XXXXXX' where 'XXXXXX' is a
- * random 6-character string. It ensures the generated code is unique within the surv_patient table.
+ * This function generates a unique numeric code in the format 'PAT-XXXXXX' where 'XXXXXX' is a
+ * random 6-digit number. It ensures the generated code is unique within the surv_patient table.
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
@@ -23,8 +23,8 @@ function surv_generate_unique_code() {
 	global $wpdb;
 
 	do {
-		// Generate a 6-character unique code prefixed with 'PAT-'.
-		$code = 'PAT-' . wp_generate_password( 6, false, false );
+		// Generate a 6-digit random number.
+		$code = 'PAT-' . str_pad( random_int( 0, 9999 ), 4, '0', STR_PAD_LEFT );
 
 		// Check if the code already exists in the database.
 		$exists = $wpdb->get_var(
@@ -37,3 +37,4 @@ function surv_generate_unique_code() {
 
 	return $code;
 }
+
