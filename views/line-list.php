@@ -95,7 +95,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 											<div class="col-md-4 mb-3">
 												<div class="form-group">
 													<label for="field_<?php echo esc_attr( $field->id ); ?>">
-														<?php echo esc_html( ucfirst( str_replace( '_', ' ', $field->field_name ) ) ); ?>
+														<?php
+														if ( 'date' === $field->field_type ) {
+															echo 'Connection date';
+														} else {
+															echo esc_html( ucfirst( str_replace( '_', ' ', $field->field_name ) ) );
+														}
+
+														?>
 														<?php if ( $field->required ) : ?>
 															<span style="color: red;">*</span>
 														<?php endif; ?>
@@ -104,6 +111,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 													<?php if ( 'text' === $field->field_type ) : ?>
 														<input
 															type="text"
+															name="fields[<?php echo esc_attr( $device->id ); ?>][<?php echo esc_attr( $field->id ); ?>]"
+															id="field_<?php echo esc_attr( $field->id ); ?>"
+															class="form-control"
+															value="<?php echo esc_attr( $value ); ?>"
+															required="<?php echo esc_attr( $field->required ? 'true' : 'false' ); ?>"
+														>
+													<?php elseif ( 'date' === $field->field_type ) : ?>
+														<input
+															type="date"
 															name="fields[<?php echo esc_attr( $device->id ); ?>][<?php echo esc_attr( $field->id ); ?>]"
 															id="field_<?php echo esc_attr( $field->id ); ?>"
 															class="form-control"
