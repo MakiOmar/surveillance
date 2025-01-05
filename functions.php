@@ -61,7 +61,7 @@ add_action(
  * @return void
  */
 function redirect_to_wp_login_if_not_logged_in() {
-	if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
+	if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] ) {
 		return;
 	}
 	// Check if the user is not logged in and not already on the login page.
@@ -82,7 +82,7 @@ add_action( 'template_redirect', 'redirect_to_wp_login_if_not_logged_in' );
  * @return void
  */
 function restrict_dashboard_access() {
-	if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
+	if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] ) {
 		return;
 	}
 	// Check if the current user is trying to access the admin dashboard.
@@ -93,3 +93,54 @@ function restrict_dashboard_access() {
 	}
 }
 add_action( 'admin_init', 'restrict_dashboard_access' );
+
+add_action(
+	'wp_footer',
+	function () {
+		?>
+		<script type="text/javascript">
+			document.addEventListener(
+				"htmx:confirm",
+				function(e) {
+					e.preventDefault()
+					Swal.fire({
+						title: "Proceed?",
+						text: `${e.detail.question}`,
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#3085d6',
+						cancelButtonColor: '#d33',
+						confirmButtonText: 'Yes, proceed!',
+						cancelButtonText: 'Cancel'
+					}).then(function(result) {
+						if (result.isConfirmed) e.detail.issueRequest(true) // use true to skip window.confirm
+					})
+				}
+			);
+			document.addEventListener("htmx:responseError", function (event) {
+				const response = event.detail.xhr;
+				
+				// Check if the server returned JSON with an error message
+				let errorMessage = "An error occurred.";
+				try {
+					const jsonResponse = JSON.parse(response.responseText);
+					if (jsonResponse.error) {
+						errorMessage = jsonResponse.error;
+					}
+				} catch (e) {
+					// Fallback for non-JSON responses
+					errorMessage = response.responseText || "An unexpected error occurred.";
+				}
+
+				// Display the error message (customize this as needed)
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: errorMessage,
+				});
+			});
+
+		</script>
+		<?php
+	}
+);
