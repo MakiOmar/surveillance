@@ -17,6 +17,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'SURV_THEME_DIR', get_template_directory() );
 define( 'SURV_THEME_URL', get_template_directory_uri() );
 
+
+add_action(
+	'wp_enqueue_scripts',
+	function () {
+		// Enqueue Select2 CSS.
+		wp_enqueue_style( 'select2-css', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css', array(), '4.1.0-rc' );
+
+		// Enqueue Select2 JS.
+		wp_enqueue_script( 'select2-js', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js', array( 'jquery' ), '4.1.0-rc', true );
+
+		// Enqueue custom script to initialize Select2.
+		wp_add_inline_script(
+			'select2-js',
+			'
+        jQuery(document).ready(function($) {
+            $("select").select2({
+                placeholder: "Select an option",
+                allowClear: true,
+            });
+        });
+    '
+		);
+	}
+);
+
 // Include necessary files.
 require_once SURV_THEME_DIR . '/helpers.php';
 require_once SURV_THEME_DIR . '/includes/tables.php';
