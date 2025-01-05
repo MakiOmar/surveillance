@@ -83,6 +83,7 @@ class PatientController extends BaseController {
 
 			// Save the data to the database.
 			$patient->save();
+			$patient->surveillances()->create();
 			header( 'HX-Redirect: ' . site_url( '/patients' ) );
 			// Return a success response.
 			$this->jsonResponse( array( 'message' => 'Patient inserted successfully' ), 201 );
