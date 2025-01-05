@@ -46,7 +46,17 @@ if ( ! empty( $patients ) ) : ?>
 							hx-confirm="Are you sure?">
 							<?php echo esc_html( 'under_surveillance' === $patient->status ? 'End' : 'Start' ); ?>
 						</button>
-						<a class="btn btn-sm btn-warning" href="<?php echo esc_url( add_query_arg( 'patient', $patient->id, home_url( '/line-list' ) ) ); ?>">Line list</a>
+						<?php
+						//phpcs:disable
+						if ( 'under_surveillance' === $patient->status ) {
+							$line_list_url = esc_url( add_query_arg( 'patient', $patient->id, home_url( '/line-list' ) ) );
+							$class         = '';
+						} else {
+							$line_list_url = '#';
+							$class         = ' disabled';
+						}
+						?>
+						<a class="btn btn-sm btn-warning<?php echo $class; ?>" href="<?php echo $line_list_url; ?>">Line list</a>
 					</td>
 				</tr>
 			<?php endforeach; ?>
