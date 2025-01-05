@@ -168,7 +168,7 @@ function create_surv_form_fields_table() {
 			`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			`device_type_id` bigint(20) UNSIGNED NOT NULL,
 			`field_name` varchar(255) NOT NULL,
-			`field_type` ENUM('text', 'textarea', 'dropdown', 'radio', 'checkbox') NOT NULL,
+			`field_type` ENUM('text', 'textarea', 'dropdown', 'radio', 'checkbox', 'date') NOT NULL,
 			`required` tinyint(1) NOT NULL DEFAULT 0,
 			`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
 			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -182,6 +182,41 @@ function create_surv_form_fields_table() {
 	}
 }
 
+/**
+ * Create the `surveillance_devices` table upon theme activation.
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
+ */
+function create_surveillance_devices_table() {
+	global $wpdb;
+
+	$table_name = $wpdb->prefix . 'surveillance_devices';
+
+	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$sql = "CREATE TABLE `$table_name` (
+			`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			`surveillance_id` bigint(20) UNSIGNED NOT NULL,
+			`patient_id` bigint(20) UNSIGNED NOT NULL,
+			`device_id` bigint(20) UNSIGNED NOT NULL,
+			`line_list_configurations` text DEFAULT NULL,
+			`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			`ended_at` datetime DEFAULT NULL,
+			PRIMARY KEY (`id`),
+			KEY `surveillance_id` (`surveillance_id`),
+			KEY `patient_id` (`patient_id`),
+			KEY `device_id` (`device_id`),
+			CONSTRAINT `wpap_surveillance_devices_surveillance_id_fk` FOREIGN KEY (`surveillance_id`) REFERENCES `{$wpdb->prefix}surveillances` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+			CONSTRAINT `wpap_surveillance_devices_patient_id_fk` FOREIGN KEY (`patient_id`) REFERENCES `{$wpdb->prefix}surv_patient` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+			CONSTRAINT `wpap_surveillance_devices_device_id_fk` FOREIGN KEY (`device_id`) REFERENCES `{$wpdb->prefix}surv_device_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		) $charset_collate ENGINE=InnoDB;";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $sql );
+	}
+}
 
 /**
  * Create the `surv_form_field_options` table upon theme activation.
@@ -270,6 +305,7 @@ function surv_tables() {
 	create_surv_form_field_options_table();
 	create_surv_patient_device_fields_table();
 	create_surveillances_table();
+	create_surveillance_devices_table();
 }
 
 // Register the activation hook.
