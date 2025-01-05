@@ -263,24 +263,45 @@ class PatientController extends BaseController {
 		}
 
 		// Fetch the patient record with related device fields by ID.
-		$patient = PatientModel::find( $id );
+		$patient = PatientModel::with( 'surveillancesDevices.device' )->find( $id );
 
 		// Check if the patient exists.
 		if ( ! $patient ) {
 			echo '<p>Patient not found.</p>';
 			return;
 		}
+
+		// Get the latest active surveillance.
 		$active_surveillance = SurveillanceModel::getLatestActiveSurveillance( $patient->id );
+		//phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		// Transform surveillancesDevices to include `device_days`.
+		$surveillancesDevices = $patient->surveillancesDevices->map(
+			function ( $device ) {
+				$created_at  = Carbon::parse( $device->created_at );
+				$now         = Carbon::now();
+				$device_days = $created_at->diffInDays( $now );
+
+				return array(
+					'device_name' => $device->device->label ?? 'Unknown',
+					'created_at'  => $device->created_at,
+					'device_days' => $device_days,
+					'device_id'   => $device->id,
+				);
+			}
+		);
+
 		// Load the view and pass the data.
 		$this->loadView(
 			'line-list',
 			array(
-				'patient'         => $patient,
-				'device_fields'   => json_decode( SURV_DEVICE_TYPES, true ),
-				'surveillance_id' => $active_surveillance->id ?? null,
+				'patient'               => $patient,
+				'device_fields'         => json_decode( SURV_DEVICE_TYPES, true ),
+				'surveillance_id'       => $active_surveillance->id ?? null,
+				'surveillances_devices' => $surveillancesDevices, // Pass transformed data.
 			)
 		);
 	}
+
 
 
 	/**

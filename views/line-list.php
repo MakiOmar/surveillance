@@ -119,6 +119,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php endforeach; ?>
 					</div>
 				</div>
+
+				<div class="container mt-4">
+					<table class="table table-striped table-bordered">
+						<thead class="thead-dark">
+							<tr>
+								<th>Device Name</th>
+								<th>Insertion date</th>
+								<th>Device Days</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php if ( ! empty( $surveillances_devices ) ) : ?>
+								<?php foreach ( $surveillances_devices as $device ) : ?>
+									<tr>
+										<td><?php echo esc_html( $device['device_name'] ); ?></td>
+										<td><?php echo esc_html( $device['created_at'] ); ?></td>
+										<td><?php echo esc_html( $device['device_days'] ); ?> days</td>
+										<td>
+											<!-- Example action buttons -->
+											<button 
+												class="btn btn-sm btn-danger" 
+												hx-post="<?php echo esc_url( admin_url( 'admin-ajax.php?action=end_device' ) ); ?>"
+												hx-vals='{"device_id": "<?php echo esc_attr( $device['device_id'] ); ?>"}'
+												hx-confirm="Are you sure you want to end this device?"
+												hx-target="this"
+												hx-swap="outerHTML"
+											>
+												End Device
+											</button>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							<?php else : ?>
+								<tr>
+									<td colspan="4" class="text-center">No devices found.</td>
+								</tr>
+							<?php endif; ?>
+						</tbody>
+					</table>
+				</div>
+
 			</div>
 
 			<div class="tab-pane fade" id="event" role="tabpanel" aria-labelledby="event-tab">

@@ -35,7 +35,14 @@ class PatientModel extends AbstractModel {
 		return $this->hasMany( PatientDeviceField::class, 'patient_id', 'id' );
 	}
 	public function surveillances() {
-		return $this->hasMany(SurveillanceModel::class, 'patient_id', 'id');
+		return $this->hasMany( SurveillanceModel::class, 'patient_id', 'id' );
 	}
-	
+	/**
+	 * Define the relationship between a patient and their surveillance devices.
+	 *
+	 * @return mixed
+	 */
+	public function surveillancesDevices() {
+		return $this->hasMany( SurveillanceDevicesModel::class, 'patient_id', 'id' );
+	}
 }
