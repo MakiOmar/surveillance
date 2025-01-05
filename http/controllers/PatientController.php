@@ -263,113 +263,83 @@ class PatientController extends BaseController {
 		}
 
 		// Fetch the patient record with related device fields by ID.
-		$patient = PatientModel::with( 'deviceFields' )->find( $id );
+		$patient = PatientModel::find( $id );
 
 		// Check if the patient exists.
 		if ( ! $patient ) {
 			echo '<p>Patient not found.</p>';
 			return;
 		}
-
-		// Fetch all available device types along with their fields and options.
-		$devices = DeviceType::with( 'fields.options' )->get();
-
-		// Prepare devices and fields with prefilled values.
-		$devicesWithFields = array();
-		foreach ( $devices as $device ) {
-			$fieldsWithOptions = array();
-			foreach ( $device->fields as $field ) {
-				// Check if there's an existing value for the patient.
-				$existingField = $patient->deviceFields()
-					->where( 'device_id', $device->id )
-					->where( 'field_id', $field->id )
-					->first();
-
-				$fieldsWithOptions[] = array(
-					'field'   => $field,
-					'options' => $field->options,
-					'value'   => $existingField ? $existingField->value : null, // Prefill value if exists.
-				);
-			}
-
-			$devicesWithFields[] = array(
-				'device' => $device,
-				'fields' => $fieldsWithOptions,
-			);
-		}
+		$active_surveillance = SurveillanceModel::getLatestActiveSurveillance( $patient->id );
 		// Load the view and pass the data.
 		$this->loadView(
 			'line-list',
 			array(
-				'patient'           => $patient,
-				'devicesWithFields' => $devicesWithFields,
+				'patient'         => $patient,
+				'device_fields'   => json_decode( SURV_DEVICE_TYPES, true ),
+				'surveillance_id' => $active_surveillance->id ?? null,
 			)
 		);
 	}
 
 
 	/**
-	 * Handle device connection and save field values.
+	 * Handle HTMX request to connect a device.
 	 */
-	public function connect_device() {
-		if ( ! isset( $_POST['fields'] ) || ! is_array( $_POST['fields'] ) ) {
-			echo '<p class="alert alert-error">Missing fields data</p>';
-			die;
-		}
+	public function connect_device_handler() {
+		check_ajax_referer( 'connect_device', 'connect_device_nonce' );
+		$_req = $_POST;
 
-		$patient_id = intval( $_POST['patient-id'] );
+		// Retrieve form data from the POST request.
+		$patient_id      = isset( $_req['patient_id'] ) ? intval( $_req['patient_id'] ) : 0;
+		$device_id       = isset( $_req['device_id'] ) ? intval( $_req['device_id'] ) : 0;
+		$surveillance_id = isset( $_req['surveillance_id'] ) ? intval( $_req['surveillance_id'] ) : 0;
 
-		// Validate IDs.
-		if ( $patient_id <= 0 ) {
-			echo '<p class="alert alert-error">Invalid patient ID</p>';
-			die;
-		}
+		// Collect all fields data into a JSON structure.
+		$fields_data = $_req;
+		unset(
+			$fields_data['patient_id'],
+			$fields_data['device_id'],
+			$fields_data['surveillance_id'],
+			$fields_data['action'],
+			$fields_data['connected_at'],
+			$fields_data['connect_device_nonce']
+		);
 
-		// Initialize a flag for success status.
-		$all_saved = true;
+		$line_list_configurations = wp_json_encode( $fields_data );
 
-		// Process each field value.
-		foreach ( $_POST['fields'] as $device_id => $fields ) {
-			foreach ( $fields as $field_id => $value ) {
-				// Check if the record exists.
-				$existingRecord = PatientDeviceField::where( 'patient_id', $patient_id )
-					->where( 'device_id', $device_id )
-					->where( 'field_id', $field_id )
-					->first();
+		try {
+			// Check if a record already exists with ended_at = NULL.
+			$existing_device = SurveillanceDevicesModel::where( 'patient_id', $patient_id )
+			->where( 'surveillance_id', $surveillance_id )
+			->where( 'device_id', $device_id )
+			->whereNull( 'ended_at' )
+			->first();
 
-				if ( $existingRecord ) {
-					// Update the existing record.
-					$existingRecord->value      = $value;
-					$existingRecord->updated_at = current_time( 'mysql' );
-
-					if ( ! $existingRecord->save() ) {
-						$all_saved = false;
-						error_log( "Failed to update field ID: {$field_id} for device ID: {$device_id}, patient ID: {$patient_id}" );
-					}
-				} else {
-					// Create a new record if it doesn't exist.
-					$patientDeviceField             = new PatientDeviceField();
-					$patientDeviceField->patient_id = $patient_id;
-					$patientDeviceField->device_id  = $device_id;
-					$patientDeviceField->field_id   = $field_id;
-					$patientDeviceField->value      = $value;
-					$patientDeviceField->created_at = current_time( 'mysql' );
-					$patientDeviceField->updated_at = current_time( 'mysql' );
-
-					if ( ! $patientDeviceField->save() ) {
-						$all_saved = false;
-						error_log( "Failed to save field ID: {$field_id} for device ID: {$device_id}, patient ID: {$patient_id}" );
-					}
-				}
+			if ( $existing_device ) {
+				$this->jsonResponse( array( 'error' => 'The device is already connected for this patient' ), 403 );
+				return;
 			}
+
+			// Use the SurveillanceDevicesModel to create a new record.
+			$device                           = new SurveillanceDevicesModel();
+			$device->surveillance_id          = $surveillance_id;
+			$device->patient_id               = $patient_id;
+			$device->device_id                = $device_id;
+			$device->line_list_configurations = $line_list_configurations;
+
+			if ( ! empty( $_req['connected_at'] ) ) {
+				$device->created_at = $_req['connected_at'];
+			}
+
+			$device->save();
+
+			$this->jsonResponse( array( 'success' => 'The device is connected successfully' ), 200 );
+		} catch ( Exception $e ) {
+			$this->jsonResponse( array( 'error' => esc_html( $e->getMessage() ) ), 403 );
+			return;
 		}
 
-		// Check overall success.
-		if ( $all_saved ) {
-			echo '<p class="alert alert-success">Data has been submitted successfully</p>';
-		} else {
-			echo '<p class="alert alert-danger">Some fields failed to save or update. Please check the logs.</p>';
-		}
 		die();
 	}
 }

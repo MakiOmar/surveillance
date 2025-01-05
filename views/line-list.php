@@ -32,116 +32,74 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="col-9">
 		<div class="tab-content ps-2 bg-light-subtle" id="v-tabsContent">
 			<div class="tab-pane fade show active" id="device" role="tabpanel" aria-labelledby="device-tab">
-			<?php if ( ! empty( $devicesWithFields ) ) : ?>
-					<!-- Tabs Navigation -->
-					<ul class="nav nav-tabs" id="deviceTabs" role="tablist">
-						<?php
-						foreach ( $devicesWithFields as $index => $deviceData ) :
-							$device = $deviceData['device'];
-							$fields = $deviceData['fields'];
-							if ( empty( $fields ) ) {
-								continue;
-							}
-							?>
-							<?php
-							$device_id = esc_attr( $device->id );
-							?>
-							<li class="nav-item" role="presentation">
-								<button
-									class="nav-link <?php echo ( 0 === $index ) ? 'active' : ''; ?>"
-									id="tab_<?php echo $device_id; ?>"
-									data-bs-toggle="tab"
-									data-bs-target="#content_<?php echo $device_id; ?>"
-									type="button"
-									role="tab"
-									aria-controls="content_<?php echo $device_id; ?>"
-									aria-selected="<?php echo ( 0 === $index ) ? 'true' : 'false'; ?>"
-								>
-									<?php echo esc_html( $device->label ); ?>
-								</button>
-							</li>
+				<!-- horizontal Tabs Navigation -->
+				<div>
+					<ul class="nav nav-tabs ps-2" id="v-tabs" role="tablist" aria-orientation="vertical">
+						<?php foreach ( $device_fields as $device_type_id => $device_data ) : ?>
+							<button 
+								class="nav-link <?php echo 1 === $device_type_id ? 'active' : ''; ?>" 
+								id="device-tab-<?php echo esc_attr( $device_type_id ); ?>" 
+								data-bs-toggle="tab" 
+								data-bs-target="#device-<?php echo esc_attr( $device_type_id ); ?>" 
+								type="button" 
+								role="tab"
+								aria-controls="device-<?php echo esc_attr( $device_type_id ); ?>" 
+								aria-selected="<?php echo 1 === $device_type_id ? 'true' : 'false'; ?>"
+							>
+								<?php echo esc_html( $device_data['name'] ); ?>
+							</button>
 						<?php endforeach; ?>
 					</ul>
+				</div>
 
-					<!-- Tabs Content -->
-					<div class="tab-content" id="deviceTabsContent">
-						<?php
-						foreach ( $devicesWithFields as $index => $deviceData ) :
-							?>
-							<?php
-							$device = $deviceData['device'];
-							$fields = $deviceData['fields'];
-							if ( empty( $fields ) ) {
-								continue;
-							}
-							$device_id = esc_attr( $device->id );
-							?>
-							<div
-								class="tab-pane fade <?php echo ( 0 === $index ) ? 'show active' : ''; ?>"
-								id="content_<?php echo $device_id; ?>"
-								role="tabpanel"
-								aria-labelledby="tab_<?php echo $device_id; ?>"
-							>
-								<h3 class="mt-4"><?php echo esc_html( $device->label ); ?></h3>
-								<form method="post" id="device_<?php echo $device_id; ?>" class="container">
+				<!-- horizontal Tabs Content -->
+				<div>
+					<div class="tab-content ps-2 bg-light-subtle" id="v-tabsContent">
+						<?php foreach ( $device_fields as $device_type_id => $device_data ) : ?>
+							<div 
+								class="tab-pane fade <?php echo 1 === $device_type_id ? 'show active' : ''; ?>" 
+								id="device-<?php echo esc_attr( $device_type_id ); ?>" 
+								role="tabpanel" 
+								aria-labelledby="device-tab-<?php echo esc_attr( $device_type_id ); ?>">
+								<h3 class="mt-4"><?php echo esc_html( $device_data['name'] ); ?></h3>
+								<form method="post" class="container" 
+									hx-post="<?php echo esc_url( admin_url( 'admin-ajax.php?action=connect_device' ) ); ?>" 
+									hx-swap="none"
+									hx-indicator="#maglev-loading-indicator"
+									hx-confirm="Are you sure?"
+									>
 									<div class="row custom-gray-div">
-										<?php foreach ( $fields as $fieldData ) : ?>
-											<?php
-											$field   = $fieldData['field'];
-											$options = $fieldData['options'];
-											$value   = $fieldData['value']; // Prefetched value for this field.
-											?>
-
+										<?php foreach ( $device_data['fields'] as $field ) : ?>
 											<div class="col-md-4 mb-3">
 												<div class="form-group">
-													<label for="field_<?php echo esc_attr( $field->id ); ?>">
-														<?php
-														if ( 'date' === $field->field_type ) {
-															echo 'Connection date';
-														} else {
-															echo esc_html( ucfirst( str_replace( '_', ' ', $field->field_name ) ) );
-														}
-
-														?>
-														<?php if ( $field->required ) : ?>
+													<label>
+														<?php echo esc_html( ucfirst( str_replace( '_', ' ', $field['field_name'] ) ) ); ?>
+														<?php if ( $field['required'] ) : ?>
 															<span style="color: red;">*</span>
 														<?php endif; ?>
 													</label>
-
-													<?php if ( 'text' === $field->field_type ) : ?>
-														<input
-															type="text"
-															name="fields[<?php echo esc_attr( $device->id ); ?>][<?php echo esc_attr( $field->id ); ?>]"
-															id="field_<?php echo esc_attr( $field->id ); ?>"
-															class="form-control"
-															value="<?php echo esc_attr( $value ); ?>"
-															required="<?php echo esc_attr( $field->required ? 'true' : 'false' ); ?>"
-														>
-													<?php elseif ( 'date' === $field->field_type ) : ?>
-														<input
-															type="date"
-															name="fields[<?php echo esc_attr( $device->id ); ?>][<?php echo esc_attr( $field->id ); ?>]"
-															id="field_<?php echo esc_attr( $field->id ); ?>"
-															class="form-control"
-															value="<?php echo esc_attr( $value ); ?>"
-															required="<?php echo esc_attr( $field->required ? 'true' : 'false' ); ?>"
-														>
-													<?php elseif ( 'radio' === $field->field_type ) : ?>
-														<?php foreach ( $options as $option ) : ?>
+													<?php if ( 'text' === $field['field_type'] ) : ?>
+														<input 
+															type="text" 
+															class="form-control" 
+															name="<?php echo esc_attr( $field['field_name'] ); ?>" 
+															<?php echo esc_attr( $field['required'] ? 'required' : '' ); ?>>
+													<?php elseif ( 'date' === $field['field_type'] ) : ?>
+														<input 
+															type="date" 
+															class="form-control" 
+															name="<?php echo esc_attr( $field['field_name'] ); ?>" 
+															<?php echo esc_attr( $field['required'] ? 'required' : '' ); ?>>
+													<?php elseif ( 'radio' === $field['field_type'] ) : ?>
+														<?php foreach ( $field['options'] as $option ) : ?>
 															<div class="form-check">
-																<input
-																	type="radio"
-																	name="fields[<?php echo esc_attr( $device->id ); ?>][<?php echo esc_attr( $field->id ); ?>]"
-																	id="field_<?php echo esc_attr( $field->id . '_' . $option->id ); ?>"
-																	value="<?php echo esc_attr( $option->option_value ); ?>"
-																	class="form-check-input"
-																	<?php echo ( $value === $option->option_value ) ? 'checked' : ''; ?>
-																>
-																<label
-																	class="form-check-label"
-																	for="field_<?php echo esc_attr( $field->id . '_' . $option->id ); ?>"
-																>
-																	<?php echo esc_html( $option->option_value ); ?>
+																<input 
+																	type="radio" 
+																	class="form-check-input" 
+																	name="<?php echo esc_attr( $field['field_name'] ); ?>" 
+																	value="<?php echo esc_attr( $option ); ?>">
+																<label class="form-check-label">
+																	<?php echo esc_html( $option ); ?>
 																</label>
 															</div>
 														<?php endforeach; ?>
@@ -149,26 +107,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 												</div>
 											</div>
 										<?php endforeach; ?>
-									</div> <!-- .row -->
-									<input type="hidden" name="patient-id" value="<?php echo esc_attr( $patient->id ); ?>">
-									<button
-										class="btn btn-success mt-3"
-										hx-post="<?php echo esc_url( admin_url( 'admin-ajax.php?action=connect_device' ) ); ?>"
-										hx-include="#device_<?php echo $device_id; ?>"
-										hx-target="#device_response_<?php echo $device_id; ?>"
-										hx-headers='{"Content-Type": "application/x-www-form-urlencoded"}'
-										hx-swap="innerHTML"
-										hx-indicator="#maglev-loading-indicator"
-									>
-										Connect Device
-									</button>
-									<div id="device_response_<?php echo $device_id; ?>"></div>
+									</div>
+									<input type="hidden" name="patient_id" value="<?php echo esc_attr( $patient->id ); ?>">
+									<input type="hidden" name="device_id" value="<?php echo esc_attr( $device_type_id ); ?>">
+									<input type="hidden" name="surveillance_id" value="<?php echo esc_attr( $surveillance_id ); ?>">
+									<?php wp_nonce_field( 'connect_device', 'connect_device_nonce' ); ?>
+									<button type="submit" class="btn btn-success mt-3">Connect</button>
 								</form>
+
 							</div>
 						<?php endforeach; ?>
 					</div>
-				<?php endif; ?>
-
+				</div>
 			</div>
 
 			<div class="tab-pane fade" id="event" role="tabpanel" aria-labelledby="event-tab">

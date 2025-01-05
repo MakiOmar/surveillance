@@ -12,6 +12,7 @@ class SurveillanceDevicesModel extends AbstractModel {
 		'patient_id',
 		'device_id',
 		'line_list_configurations',
+		'created_at',
 		'ended_at',
 	);
 
