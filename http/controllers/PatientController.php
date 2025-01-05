@@ -98,6 +98,8 @@ class PatientController extends BaseController {
 	 * @return void Outputs a JSON response.
 	 */
 	public function toggleSurveillanceStatus() {
+		// Verify the nonce.
+		check_ajax_referer( 'toggle_surveillance_status_nonce', 'nonce' );
 		// Use $_POST as the data source.
 		$data = $_POST;
 
@@ -117,23 +119,38 @@ class PatientController extends BaseController {
 			}
 
 			// Toggle the status.
-			$new_status      = 'under_surveillance' === $patient->status ? 'surveillance_completed' : 'under_surveillance';
-			$patient->status = $new_status;
+			$new_status = 'under_surveillance' === $patient->status ? 'surveillance_completed' : 'under_surveillance';
+			// Update the latest surveillance with ended_at = NULL to the current datetime.
+			$latest_surveillance = SurveillanceModel::getLatestActiveSurveillance( $patient->id );
 
-			// Save the updated status.
-			$patient->save();
 			// If the new status is `under_surveillance`, insert a new row in the `surveillances` table.
 			if ( 'under_surveillance' === $new_status ) {
-				$patient->surveillances()->create();
-			} else {
-				// Update the latest surveillance with ended_at = NULL to the current datetime.
-				$latest_surveillance = SurveillanceModel::getLatestActiveSurveillance( $patient->id );
-
 				if ( $latest_surveillance ) {
+					$this->jsonResponse( array( 'error' => 'Please end the latest surveillance process' ), 404 );
+					return;
+				} else {
+					try {
+						$patient->surveillances()->create();
+						$patient->status = $new_status;
+						$patient->save();
+					} catch ( \Exception $e ) {
+						// Handle exceptions and return an error response.
+						$this->jsonResponse( array( 'error' => $e->getMessage() ), 500 );
+					}
+				}
+			} elseif ( $latest_surveillance ) {
+				try {
 					$latest_surveillance->ended_at = current_time( 'mysql' ); // WordPress current datetime.
 					$latest_surveillance->save();
+					$patient->status = $new_status;
+					$patient->save();
+				} catch ( \Exception $e ) {
+					// Handle exceptions and return an error response.
+					$this->jsonResponse( array( 'error' => $e->getMessage() ), 500 );
 				}
 			}
+
+			$this->setSurveillanceCountDays( $patient, $latest_surveillance );
 
 			// Load the updated row view and pass the patient data to it.
 			$this->loadView(
@@ -148,7 +165,30 @@ class PatientController extends BaseController {
 			$this->jsonResponse( array( 'error' => $e->getMessage() ), 500 );
 		}
 	}
+	/**
+	 * Set Surveillance Count Days
+	 *
+	 * @param object      $patient Patient object.
+	 * @param object|null $latest_surveillance Latest surveillance objetc or null.
+	 * @return void
+	 */
+	protected function setSurveillanceCountDays( &$patient, $latest_surveillance ) {
+		// Calculate surveillance_days_count using Carbon.
+		if ( $latest_surveillance ) {
+			$created_at   = Carbon::createFromFormat( 'Y-m-d H:i:s', $latest_surveillance->created_at );
+			$current_time = Carbon::now(); // Get current time.
+			$days         = $created_at->diffInDays( $current_time, false ); // Calculate difference in days.
 
+			// Check for fractional day and ceil it up.
+			if ( $created_at->diffInHours( $current_time, false ) % 24 > 0 ) {
+				++$days;
+			}
+
+			$patient->surveillance_days_count = $days;
+		} else {
+			$patient->surveillance_days_count = 0;
+		}
+	}
 	/**
 	 * Fetch paginated patients for display in a Bootstrap table.
 	 *
@@ -177,21 +217,7 @@ class PatientController extends BaseController {
 					$latest_surveillance      = SurveillanceModel::getLatestActiveSurveillance( $patient->id );
 					$patient->surveillance_id = $latest_surveillance ? $latest_surveillance->id : 0;
 
-					// Calculate surveillance_days_count using Carbon.
-					if ( $latest_surveillance ) {
-						$created_at   = Carbon::createFromFormat( 'Y-m-d H:i:s', $latest_surveillance->created_at );
-						$current_time = Carbon::now(); // Get current time.
-						$days         = $created_at->diffInDays( $current_time, false ); // Calculate difference in days.
-
-						// Check for fractional day and ceil it up.
-						if ( $created_at->diffInHours( $current_time, false ) % 24 > 0 ) {
-							$days++;
-						}
-
-						$patient->surveillance_days_count = $days;
-					} else {
-						$patient->surveillance_days_count = 0;
-					}
+					$this->setSurveillanceCountDays( $patient, $latest_surveillance );
 
 					return $patient;
 				}

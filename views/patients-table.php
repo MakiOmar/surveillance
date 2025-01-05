@@ -39,7 +39,7 @@ if ( ! empty( $patients ) ) : ?>
 						<button 
 							class="btn btn-sm <?php echo esc_html( 'under_surveillance' === $patient->status ? 'btn-danger' : 'btn-success' ); ?>" 
 							data-hx-post="<?php echo esc_url( admin_url( 'admin-ajax.php?action=toggle_surveillance_status' ) ); ?>" 
-							data-hx-vals='{"id": "<?php echo esc_js( $patient->id ); ?>"}'
+							data-hx-vals='{"id": "<?php echo esc_js( $patient->id ); ?>", "nonce": "<?php echo esc_js( wp_create_nonce( 'toggle_surveillance_status_nonce' ) ); ?>"}'
 							data-hx-target="closest tr" 
 							data-hx-swap="outerHTML"
 							hx-indicator="#maglev-loading-indicator"
