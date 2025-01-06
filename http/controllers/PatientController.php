@@ -174,22 +174,25 @@ class PatientController extends BaseController {
 	 * @return void
 	 */
 	protected function setSurveillanceCountDays( &$patient, $latest_surveillance ) {
-		// Calculate surveillance_days_count using Carbon.
 		if ( $latest_surveillance ) {
 			$created_at   = Carbon::createFromFormat( 'Y-m-d H:i:s', $latest_surveillance->created_at );
 			$current_time = Carbon::now(); // Get current time.
-			$days         = $created_at->diffInDays( $current_time, false ); // Calculate difference in days.
 
-			// Check for fractional day and ceil it up.
-			if ( $created_at->diffInHours( $current_time, false ) % 24 > 0 ) {
-				++$days;
-			}
+			// Calculate total hours between the two timestamps.
+			$total_hours = $created_at->diffInHours( $current_time, false );
 
-			$patient->surveillance_days_count = $days;
+			// Calculate days and remaining hours.
+			$days  = intdiv( $total_hours, 24 ); // Full days.
+			$hours = $total_hours % 24;          // Remaining hours.
+
+			// Store the result as a formatted string (e.g., "5 days, 3 hours").
+			$patient->surveillance_days_count = "{$days} days, {$hours} hours";
 		} else {
-			$patient->surveillance_days_count = 0;
+			// Default value if no surveillance is found.
+			$patient->surveillance_days_count = '0 days, 0 hours';
 		}
 	}
+
 	/**
 	 * Fetch paginated patients for display in a Bootstrap table.
 	 *
