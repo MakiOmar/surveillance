@@ -273,6 +273,16 @@ class PatientController extends BaseController {
 			echo '<p>Patient not found.</p>';
 			return;
 		}
+		if ( 'under_surveillance' !== $patient->status && ( empty( $_GET['show'] ) || 'details-only' !== $_GET['show'] ) ) {
+			// Load the view and pass the data.
+			$this->loadView(
+				'error',
+				array(
+					'error_message' => 'Patient is not under surveillance.',
+				)
+			);
+			return;
+		}
 
 		// Get the latest active surveillance.
 		$active_surveillance = SurveillanceModel::getLatestActiveSurveillance( $patient->id );

@@ -32,6 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="col-9">
 		<div class="tab-content ps-2 bg-light-subtle" id="v-tabsContent">
 			<div class="tab-pane fade show active" id="device" role="tabpanel" aria-labelledby="device-tab">
+				<?php if ( empty( $_GET['show'] ) || 'details-only' !== $_GET['show'] ) { ?>
 				<!-- horizontal Tabs Navigation -->
 				<div>
 					<ul class="nav nav-tabs ps-2" id="v-tabs" role="tablist" aria-orientation="vertical">
@@ -119,7 +120,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php endforeach; ?>
 					</div>
 				</div>
-
+				<?php } ?>
 				<div class="container mt-4">
 					<table class="table table-striped table-bordered">
 						<thead class="thead-dark">
@@ -127,7 +128,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<th>Device Name</th>
 								<th>Insertion date</th>
 								<th>Device Days</th>
+								<?php if ( empty( $_GET['show'] ) || 'details-only' !== $_GET['show'] ) { ?>
 								<th>Actions</th>
+								<?php } ?>
 							</tr>
 						</thead>
 						<tbody>
@@ -137,6 +140,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										<td><?php echo esc_html( $device['device_name'] ); ?></td>
 										<td><?php echo esc_html( $device['created_at'] ); ?></td>
 										<td><?php echo esc_html( $device['device_days'] ); ?></td>
+										<?php if ( empty( $_GET['show'] ) || 'details-only' !== $_GET['show'] ) { ?>
 										<td>
 											<?php if ( ! $device['ended_at'] ) { ?>
 											<!-- Example action buttons -->
@@ -156,7 +160,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 												End Device
 											</button>
 											<?php } ?>
+											<button 
+												class="btn btn-sm btn-warning" 
+												>
+												bundle care
+											</button>
 										</td>
+										<?php } ?>
 									</tr>
 								<?php endforeach; ?>
 							<?php else : ?>

@@ -27,6 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			data-hx-target="closest tr" 
 			data-hx-swap="outerHTML"
 			hx-indicator="#maglev-loading-indicator"
+			hx-confirm="Are you sure?"
 			data-hx-vals='{"id": "<?php echo esc_js( $patient->id ); ?>", "nonce": "<?php echo esc_js( wp_create_nonce( 'toggle_surveillance_status_nonce' ) ); ?>"}'
 			>
 			<?php echo esc_html( 'under_surveillance' === $patient->status ? 'End' : 'Start' ); ?>
@@ -42,5 +43,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 		}
 		?>
 		<a class="btn btn-sm btn-warning<?php echo $class; ?>" href="<?php echo $line_list_url; ?>">Line list</a>
+		<a 
+			class="btn btn-sm btn-primary" 
+			href="#"
+			>
+			Edit
+		</a>
+		<a 
+			class="btn btn-sm btn-info" 
+			href="<?php echo esc_url(
+				add_query_arg(
+					array(
+						'patient' => $patient->id,
+						'show'    => 'details-only',
+					)
+					, home_url( '/line-list' ) )
+			); ?>"
+			>
+			Details
+		</a>
 	</td>
 </tr>

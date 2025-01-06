@@ -127,7 +127,7 @@ add_action(
 			document.addEventListener(
 				"htmx:confirm",
 				function(e) {
-					e.preventDefault()
+					e.preventDefault();
 					Swal.fire({
 						title: "Proceed?",
 						text: `${e.detail.question}`,
@@ -180,7 +180,7 @@ add_action(
 						}
 					} catch (e) {
 						// Fallback for non-JSON responses
-						successMessage = response.responseText || "Operation completed.";
+						successMessage = "Operation completed.";
 						reload = false;
 					}
 

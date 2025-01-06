@@ -57,6 +57,25 @@ if ( ! empty( $patients ) ) : ?>
 						}
 						?>
 						<a class="btn btn-sm btn-warning<?php echo $class; ?>" href="<?php echo $line_list_url; ?>">Line list</a>
+						<a 
+							class="btn btn-sm btn-primary" 
+							href="#"
+							>
+							Edit
+						</a>
+						<a 
+							class="btn btn-sm btn-info" 
+							href="<?php echo esc_url(
+								add_query_arg(
+									array(
+										'patient' => $patient->id,
+										'show'    => 'details-only',
+									)
+									, home_url( '/line-list' ) )
+							); ?>"
+							>
+							Details
+						</a>
 					</td>
 				</tr>
 			<?php endforeach; ?>
