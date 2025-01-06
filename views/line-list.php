@@ -138,17 +138,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 										<td><?php echo esc_html( $device['created_at'] ); ?></td>
 										<td><?php echo esc_html( $device['device_days'] ); ?></td>
 										<td>
+											<?php if ( ! $device['ended_at'] ) { ?>
 											<!-- Example action buttons -->
 											<button 
 												class="btn btn-sm btn-danger" 
 												hx-post="<?php echo esc_url( admin_url( 'admin-ajax.php?action=end_device' ) ); ?>"
-												hx-vals='{"device_id": "<?php echo esc_attr( $device['device_id'] ); ?>"}'
+												hx-vals=
+												'{
+												"surveillance_device_id": "<?php echo esc_js( $device['surveillance_device_id'] ); ?>",
+												"end_device": "<?php echo esc_js( wp_create_nonce( 'end_device_nonce' ) ); ?>"
+												}'
 												hx-confirm="Are you sure you want to end this device?"
 												hx-target="this"
 												hx-swap="outerHTML"
+												hx-indicator="#maglev-loading-indicator"
 											>
 												End Device
 											</button>
+											<?php } ?>
 										</td>
 									</tr>
 								<?php endforeach; ?>

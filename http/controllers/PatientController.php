@@ -278,17 +278,18 @@ class PatientController extends BaseController {
 		$surveillancesDevices = $patient->surveillancesDevices->map(
 			function ( $device ) {
 				$created_at = Carbon::parse( $device->created_at );
-				$now        = Carbon::now();
+				$now        = ! $device->ended_at ? Carbon::now() : $device->ended_at;
 
 				$total_hours = $created_at->diffInHours( $now ); // Total difference in hours.
 				$days        = intdiv( $total_hours, 24 ); // Calculate full days.
 				$hours       = $total_hours % 24; // Remaining hours after full days.
 
 				return array(
-					'device_name' => $device->device->label ?? 'Unknown',
-					'created_at'  => $device->created_at,
-					'device_days' => "{$days} days and {$hours} hours", // Format as "X days, Y hours".
-					'device_id'   => $device->id,
+					'device_name'            => $device->device->label ?? 'Unknown',
+					'created_at'             => $device->created_at,
+					'ended_at'               => $device->ended_at,
+					'device_days'            => "{$days} days and {$hours} hours", // Format as "X days, Y hours".
+					'surveillance_device_id' => $device->id,
 				);
 			}
 		);
