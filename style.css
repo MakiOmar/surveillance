@@ -10,3 +10,25 @@ License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: surv
 */
+
+table.bundlecare {
+    width: 100%;
+    border-collapse: collapse;
+}
+table.bundlecare th, table.bundlecare td {
+    border: 1px solid #000000;
+    text-align: center;
+    padding: 10px;
+}
+table.bundlecare th {
+    background-color: #4CAF50;
+    color: white;
+    min-width: 30px;
+}
+table.bundlecare td {
+    background-color: #d5f5d5;
+}
+.modal-dialog {
+    max-width: 80%; /* Set maximum width */
+    width: auto;    /* Allow flexible width */
+}
