@@ -21,6 +21,12 @@ define( 'SURV_THEME_URL', get_template_directory_uri() );
 add_action(
 	'wp_enqueue_scripts',
 	function () {
+		wp_enqueue_style(
+			'surv',
+			get_stylesheet_uri(),
+			array(),
+			wp_get_theme()->get( 'Version' )
+		);
 		// Enqueue Select2 CSS.
 		wp_enqueue_style( 'select2-css', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css', array(), '4.1.0-rc' );
 
