@@ -33,8 +33,11 @@ class SurveillanceDevicesController extends BaseController {
 			// Mark the device as ended.
 			$device->ended_at = current_time( 'mysql' );
 			$device->save();
-			if ( ! $device ) {
-				$this->jsonResponse( array( 'success' => '<td colspan="4" class="text-center text-muted">Device ended.</td>' ), 200 );
+			if ( $device ) {
+				echo '';
+				die;
+			} else {
+				$this->jsonResponse( array( 'error' => 'Something wrong happend.' ), 404 );
 			}
 		} catch ( Exception $e ) {
 			$this->jsonResponse( array( 'error' => $e->getMessage() ), 500 );
