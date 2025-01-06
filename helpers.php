@@ -37,4 +37,23 @@ function surv_generate_unique_code() {
 
 	return $code;
 }
+/**
+ * Load a view file and pass data to it.
+ *
+ * @param string $view The name of the view file (without `.php` extension).
+ * @param array  $data The data to pass to the view.
+ *
+ * @return void Includes the view file with data.
+ */
+function load_view( $view, $data = array() ) {
+	$view_path = SURV_THEME_DIR . '/views/' . $view . '.php'; // Adjust the path to your views directory.
 
+	if ( file_exists( $view_path ) ) {
+		//phpcs:disable
+		extract( $data ); // Extract the data array into variables.
+		//phpcs:enable
+		include $view_path;
+	} else {
+		echo '<p>Error: View file not found.</p>';
+	}
+}
