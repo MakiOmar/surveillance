@@ -303,6 +303,7 @@ class PatientController extends BaseController {
 					'ended_at'               => $device->ended_at,
 					'device_days'            => "{$days} days and {$hours} hours", // Format as "X days, Y hours".
 					'surveillance_device_id' => $device->id,
+					'device_id'              => $device->device->id,
 				);
 			}
 		);
