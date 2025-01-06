@@ -167,19 +167,21 @@ add_action(
 
 			document.addEventListener("htmx:afterRequest", function (event) {
 				const response = event.detail.xhr;
-
+				var reload;
 				// Check if the server returned a success response
 				if (response.status == 200 ) {
 					let successMessage = "Operation completed successfully.";
 					try {
 						// Attempt to parse JSON if the response contains it
 						const jsonResponse = JSON.parse(response.responseText);
+						reload = jsonResponse.reload;
 						if (jsonResponse.success) {
 							successMessage = jsonResponse.success;
 						}
 					} catch (e) {
 						// Fallback for non-JSON responses
 						successMessage = response.responseText || "Operation completed.";
+						reload = false;
 					}
 
 					// Display the success message (customize this as needed)
@@ -187,6 +189,8 @@ add_action(
 						icon: "success",
 						title: "Success",
 						text: successMessage,
+					}).then(function(result) {
+						if (result.isConfirmed && reload ) location.reload();
 					});
 				}
 			});

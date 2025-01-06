@@ -104,7 +104,13 @@ class SurveillanceDevicesController extends BaseController {
 
 			$device->save();
 
-			$this->jsonResponse( array( 'success' => 'The device is connected successfully' ), 200 );
+			$this->jsonResponse(
+				array(
+					'success' => 'The device is connected successfully',
+					'reload'  => true,
+				),
+				200
+			);
 		} catch ( Exception $e ) {
 			$this->jsonResponse( array( 'error' => esc_html( $e->getMessage() ) ), 403 );
 			return;
