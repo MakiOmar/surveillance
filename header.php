@@ -1,8 +1,12 @@
 <?php
-// Exit if accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+/**
+ * Header
+ *
+ * @package Surveillance
+ */
+
+defined( 'ABSPATH' ) || die;
+
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -62,7 +66,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		margin: 5px 0;
 	}
 	form{
-		max-width:768px;
+		max-width: 1200px;
 		margin:auto
 	}
 	</style>

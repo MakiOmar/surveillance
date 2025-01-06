@@ -49,9 +49,11 @@ defined( 'ABSPATH' ) || die;
 							<?php } ?>
 							<button 
 								class="btn btn-sm btn-warning" 
-								>
-								bundle care
+								data-bs-toggle="modal" 
+								data-bs-target="#bundleCareModal">
+								Bundle Care
 							</button>
+
 						</td>
 						<?php } ?>
 					</tr>
@@ -64,3 +66,81 @@ defined( 'ABSPATH' ) || die;
 		</tbody>
 	</table>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="bundleCareModal" tabindex="-1" aria-labelledby="bundleCareModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="bundleCareModalLabel">Bundle Care Details</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+			<form>
+				<table class="bundlecare">
+					<thead>
+						<tr>
+							<th rowspan="2">Date</th>
+							<th colspan="3">Hand Hygiene</th>
+							<th colspan="3">Daily assessment of catheter necessity</th>
+							<th colspan="3">Proper dressing choice</th>
+							<th colspan="3">* Proper frequency of dressing change</th>
+							<th colspan="3">** Proper replacement of administrative sets</th>
+						</tr>
+						<tr>
+							<th>YES</th>
+							<th>No</th>
+							<th>N/A</th>
+							<th>YES</th>
+							<th>No</th>
+							<th>N/A</th>
+							<th>YES</th>
+							<th>No</th>
+							<th>N/A</th>
+							<th>YES</th>
+							<th>No</th>
+							<th>N/A</th>
+							<th>YES</th>
+							<th>No</th>
+							<th>N/A</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<input type="date" name="date">
+							</td>
+							<!-- Hand Hygiene -->
+							<td><input type="radio" name="hand_hygiene" value="YES"></td>
+							<td><input type="radio" name="hand_hygiene" value="No"></td>
+							<td><input type="radio" name="hand_hygiene" value="N/A"></td>
+							<!-- Catheter Necessity -->
+							<td><input type="radio" name="catheter_assessment" value="YES"></td>
+							<td><input type="radio" name="catheter_assessment" value="No"></td>
+							<td><input type="radio" name="catheter_assessment" value="N/A"></td>
+							<!-- Proper Dressing Choice -->
+							<td><input type="radio" name="dressing_choice" value="YES"></td>
+							<td><input type="radio" name="dressing_choice" value="No"></td>
+							<td><input type="radio" name="dressing_choice" value="N/A"></td>
+							<!-- Frequency of Dressing Change -->
+							<td><input type="radio" name="dressing_frequency" value="YES"></td>
+							<td><input type="radio" name="dressing_frequency" value="No"></td>
+							<td><input type="radio" name="dressing_frequency" value="N/A"></td>
+							<!-- Replacement of Administrative Sets -->
+							<td><input type="radio" name="replacement_sets" value="YES"></td>
+							<td><input type="radio" name="replacement_sets" value="No"></td>
+							<td><input type="radio" name="replacement_sets" value="N/A"></td>
+						</tr>
+					</tbody>
+				</table>
+				<button type="submit">Submit</button>
+			</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
