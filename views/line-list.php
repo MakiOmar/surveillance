@@ -85,9 +85,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 															class="form-control" 
 															name="<?php echo esc_attr( $field['field_name'] ); ?>" 
 															<?php echo esc_attr( $field['required'] ? 'required' : '' ); ?>>
-													<?php elseif ( 'date' === $field['field_type'] ) : ?>
+													<?php elseif ( 'datetime-local' === $field['field_type'] ) : ?>
 														<input 
-															type="date" 
+															type="datetime-local" 
 															class="form-control" 
 															name="<?php echo esc_attr( $field['field_name'] ); ?>" 
 															<?php echo esc_attr( $field['required'] ? 'required' : '' ); ?>>

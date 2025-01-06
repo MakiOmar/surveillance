@@ -35,7 +35,7 @@ $device_fields = array(
 			),
 			array(
 				'field_name' => 'connected_at',
-				'field_type' => 'date',
+				'field_type' => 'datetime-local',
 				'required'   => false,
 				'options'    => array(),
 			),
@@ -53,7 +53,7 @@ $device_fields = array(
 			),
 			array(
 				'field_name' => 'connected_at',
-				'field_type' => 'date',
+				'field_type' => 'datetime-local',
 				'required'   => false,
 				'options'    => array(),
 			),
@@ -71,7 +71,7 @@ $device_fields = array(
 			),
 			array(
 				'field_name' => 'connected_at',
-				'field_type' => 'date',
+				'field_type' => 'datetime-local',
 				'required'   => false,
 				'options'    => array(),
 			),
