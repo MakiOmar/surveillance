@@ -15,3 +15,4 @@ add_action( 'wp_ajax_insert_patient', array( new PatientController(), 'insertPat
 add_action( 'wp_ajax_toggle_surveillance_status', array( new PatientController(), 'toggleSurveillanceStatus' ) );
 add_action( 'wp_ajax_connect_device', array( new SurveillanceDevicesController(), 'connect_device_handler' ) );
 add_action( 'wp_ajax_end_device', array( new SurveillanceDevicesController(), 'end_device_handler' ) );
+add_action( 'wp_ajax_get_bundlecare', array( new BundleCareController(), 'getBundleCareHandler' ) );

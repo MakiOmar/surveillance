@@ -50,7 +50,18 @@ defined( 'ABSPATH' ) || die;
 							<button 
 								class="btn btn-sm btn-warning" 
 								data-bs-toggle="modal" 
-								data-bs-target="#bundleCareModal">
+								data-bs-target="#bundleCareModal"
+								hx-no-swal="true"
+								hx-post="<?php echo esc_url( admin_url( 'admin-ajax.php?action=get_bundlecare' ) ); ?>"
+								hx-vals=
+								'{
+								"device_id": "<?php echo esc_js( $device['device_id'] ); ?>",
+								"getbundlecare": "<?php echo esc_js( wp_create_nonce( 'getbundlecare_nonce' ) ); ?>"
+								}'
+								hx-target="#bundlecare-content"
+								hx-swap="innerHTML"
+								hx-indicator="#maglev-loading-indicator"
+								>
 								Bundle Care
 							</button>
 
@@ -74,67 +85,7 @@ defined( 'ABSPATH' ) || die;
 				<h5 class="modal-title" id="bundleCareModalLabel">Bundle Care Details</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<div class="modal-body">
-			<form>
-				<table class="bundlecare">
-					<thead>
-						<tr>
-							<th rowspan="2">Date</th>
-							<th colspan="3">Hand Hygiene</th>
-							<th colspan="3">Daily assessment of catheter necessity</th>
-							<th colspan="3">Proper dressing choice</th>
-							<th colspan="3">* Proper frequency of dressing change</th>
-							<th colspan="3">** Proper replacement of administrative sets</th>
-						</tr>
-						<tr>
-							<th>YES</th>
-							<th>No</th>
-							<th>N/A</th>
-							<th>YES</th>
-							<th>No</th>
-							<th>N/A</th>
-							<th>YES</th>
-							<th>No</th>
-							<th>N/A</th>
-							<th>YES</th>
-							<th>No</th>
-							<th>N/A</th>
-							<th>YES</th>
-							<th>No</th>
-							<th>N/A</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>
-								<input type="date" name="date">
-							</td>
-							<!-- Hand Hygiene -->
-							<td><input type="radio" name="hand_hygiene" value="YES"></td>
-							<td><input type="radio" name="hand_hygiene" value="No"></td>
-							<td><input type="radio" name="hand_hygiene" value="N/A"></td>
-							<!-- Catheter Necessity -->
-							<td><input type="radio" name="catheter_assessment" value="YES"></td>
-							<td><input type="radio" name="catheter_assessment" value="No"></td>
-							<td><input type="radio" name="catheter_assessment" value="N/A"></td>
-							<!-- Proper Dressing Choice -->
-							<td><input type="radio" name="dressing_choice" value="YES"></td>
-							<td><input type="radio" name="dressing_choice" value="No"></td>
-							<td><input type="radio" name="dressing_choice" value="N/A"></td>
-							<!-- Frequency of Dressing Change -->
-							<td><input type="radio" name="dressing_frequency" value="YES"></td>
-							<td><input type="radio" name="dressing_frequency" value="No"></td>
-							<td><input type="radio" name="dressing_frequency" value="N/A"></td>
-							<!-- Replacement of Administrative Sets -->
-							<td><input type="radio" name="replacement_sets" value="YES"></td>
-							<td><input type="radio" name="replacement_sets" value="No"></td>
-							<td><input type="radio" name="replacement_sets" value="N/A"></td>
-						</tr>
-					</tbody>
-				</table>
-				<button type="submit">Submit</button>
-			</form>
-			</div>
+			<div class="modal-body" id="bundlecare-content" hx-no-swal="false"></div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 				<button type="button" class="btn btn-primary">Save changes</button>
