@@ -133,6 +133,7 @@ add_action(
 			document.addEventListener(
 				"htmx:confirm",
 				function(e) {
+					if (!e.detail.target.hasAttribute('hx-confirm')) return
 					e.preventDefault();
 					Swal.fire({
 						title: "Proceed?",
@@ -172,6 +173,7 @@ add_action(
 			});
 
 			document.addEventListener("htmx:afterRequest", function (event) {
+				if (event.detail.target.hasAttribute('hx-no-swal')) return;
 				const response = event.detail.xhr;
 				var reload;
 				// Check if the server returned a success response
