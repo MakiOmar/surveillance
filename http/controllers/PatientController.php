@@ -274,17 +274,20 @@ class PatientController extends BaseController {
 		// Get the latest active surveillance.
 		$active_surveillance = SurveillanceModel::getLatestActiveSurveillance( $patient->id );
 		//phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		// Transform surveillancesDevices to include `device_days`.
+		// Transform surveillancesDevices to include `device_days` as days and hours.
 		$surveillancesDevices = $patient->surveillancesDevices->map(
 			function ( $device ) {
-				$created_at  = Carbon::parse( $device->created_at );
-				$now         = Carbon::now();
-				$device_days = $created_at->diffInDays( $now );
+				$created_at = Carbon::parse( $device->created_at );
+				$now        = Carbon::now();
+
+				$total_hours = $created_at->diffInHours( $now ); // Total difference in hours.
+				$days        = intdiv( $total_hours, 24 ); // Calculate full days.
+				$hours       = $total_hours % 24; // Remaining hours after full days.
 
 				return array(
 					'device_name' => $device->device->label ?? 'Unknown',
 					'created_at'  => $device->created_at,
-					'device_days' => $device_days,
+					'device_days' => "{$days} days and {$hours} hours", // Format as "X days, Y hours".
 					'device_id'   => $device->id,
 				);
 			}
@@ -301,6 +304,7 @@ class PatientController extends BaseController {
 			)
 		);
 	}
+
 
 
 

@@ -136,7 +136,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 									<tr>
 										<td><?php echo esc_html( $device['device_name'] ); ?></td>
 										<td><?php echo esc_html( $device['created_at'] ); ?></td>
-										<td><?php echo esc_html( $device['device_days'] ); ?> days</td>
+										<td><?php echo esc_html( $device['device_days'] ); ?></td>
 										<td>
 											<!-- Example action buttons -->
 											<button 
