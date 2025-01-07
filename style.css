@@ -10,12 +10,14 @@ License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: surv
 */
-
+table{
+    margin-top: 20px;
+}
 table.bundlecare {
     width: 100%;
     border-collapse: collapse;
 }
-table.bundlecare th, table.bundlecare td {
+table th, table td {
     border: 1px solid #000000;
     text-align: center;
     padding: 10px;
