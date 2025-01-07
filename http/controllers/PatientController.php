@@ -296,6 +296,48 @@ class PatientController extends BaseController {
 				$days        = intdiv( $total_hours, 24 ); // Calculate full days.
 				$hours       = $total_hours % 24; // Remaining hours after full days.
 
+				// Check if ended_at is null and there are no matching records in the bundle table for today.
+				$status        = 'success'; // Default status.
+				$missing_dates = array();
+				$text          = 'dark';
+				if ( is_null( $surveillance_device->ended_at ) ) {
+					$today = Carbon::today()->toDateString(); // Today's date in 'Y-m-d' format.
+
+					$hasBundleCareToday = SurveillanceDeviceBundle::where( 'surveillance_devices_id', $surveillance_device->id )
+						->whereDate( 'created_at', $today )
+						->exists();
+					if ( ! $hasBundleCareToday ) {
+						$status = 'danger';
+					}
+				}
+
+				// Check for missing daily records if ended_at is null.
+				if ( is_null( $surveillance_device->ended_at ) ) {
+					$all_dates    = array(); // Store all dates from created_at to today.
+					$current_date = $created_at->copy();
+
+					while ( $current_date->lte( Carbon::today() ) ) {
+						$all_dates[] = $current_date->toDateString();
+						$current_date->addDay();
+					}
+
+					// Fetch existing record dates for this surveillance device.
+					$existing_dates = SurveillanceDeviceBundle::where( 'surveillance_devices_id', $surveillance_device->id )
+						->whereBetween( 'created_at', array( $created_at->toDateString(), Carbon::today()->toDateString() ) )
+						->pluck( 'created_at' )
+						->map( fn( $date ) => Carbon::parse( $date )->toDateString() )
+						->toArray();
+
+					// Calculate missing dates.
+					$missing_dates = array_diff( $all_dates, $existing_dates );
+
+					// If missing dates exist, set status to 'danger'.
+					if ( ! empty( $missing_dates ) ) {
+						$status = 'dark';
+						$text   = 'light';
+					}
+				}
+
 				return array(
 					'device_name'            => $surveillance_device->device->label ?? 'Unknown',
 					'created_at'             => $surveillance_device->created_at,
@@ -303,6 +345,9 @@ class PatientController extends BaseController {
 					'device_days'            => "{$days} days and {$hours} hours", // Format as "X days, Y hours".
 					'surveillance_device_id' => $surveillance_device->id,
 					'device_id'              => $surveillance_device->device->id,
+					'status'                 => $status, // Include status in the transformed data.
+					'missing_dates'          => $missing_dates, // Include missing dates.
+					'text'                   => $text, // Include missing dates.
 				);
 			}
 		);
