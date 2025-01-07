@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Security.NonceVerification.Recommended
 /**
  * Surveillance devices partial
  *
@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || die;
 		<tbody>
 			<?php if ( ! empty( $surveillances_devices ) ) : ?>
 				<?php foreach ( $surveillances_devices as $device ) : ?>
-					<tr>
+					<tr class="bg-<?php echo esc_attr( $device['status'] ); ?> text-<?php echo esc_attr( $device['text'] ); ?>">
 						<td><?php echo esc_html( $device['device_name'] ); ?></td>
 						<td><?php echo esc_html( $device['created_at'] ); ?></td>
 						<td><?php echo esc_html( $device['device_days'] ); ?></td>
@@ -86,7 +86,18 @@ defined( 'ABSPATH' ) || die;
 				<h5 class="modal-title" id="bundleCareModalLabel">Bundle Care Details</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<div class="modal-body" id="bundlecare-content" hx-no-swal="false"></div>
+			<div class="modal-body">
+				<?php
+				if ( ! empty( $device['missing_dates'] ) ) {
+					?>
+						<div class="alert alert-danger" role="alert">
+						You did't add the bundlecare for these dates: <?php echo esc_html( implode( '|', $device['missing_dates'] ) ); ?>
+						</div>
+						<?php
+				}
+				?>
+			<div id="bundlecare-content" hx-no-swal="false"></div>
+			</div>
 		</div>
 	</div>
 </div>
