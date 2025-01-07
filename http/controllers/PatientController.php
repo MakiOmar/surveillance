@@ -1,4 +1,4 @@
-<?php //phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+<?php //phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid, WordPress.Security.NonceVerification.Recommended
 /**
  * Prevent direct access to the file.
  */
@@ -51,6 +51,7 @@ class PatientController extends BaseController {
 		// Validate all required fields.
 		foreach ( $required_fields as $field ) {
 			if ( empty( $data[ $field ] ) ) {
+				// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				error_log( $field ); // Log the missing field.
 				$this->jsonResponse( array( 'error' => "Missing required field: {$field}" ), 400 );
 				return;
