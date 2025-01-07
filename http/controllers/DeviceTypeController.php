@@ -5,11 +5,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
-
-use Dbout\WpOrm\Models\Model;
-use Illuminate\Support\Arr;
-use TenQuality\WP\QueryBuilder\QueryBuilder;
-
 /**
  * Class DeviceTypeController
  *
