@@ -12,6 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+if ( ! $bundle_care_record ) {
+	echo '<p>No data available to display.</p>';
+	return;
+}
 // Decode the bundle_care JSON.
 $bundle_care_json  = $bundle_care_record->bundle_care;
 $bundle_care_table = json_decode( $bundle_care_json, true );
