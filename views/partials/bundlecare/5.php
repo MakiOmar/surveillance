@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 ?>
-<table class="bundle-elements">
+<table class="bundlecare">
 	<thead>
 		<tr>
 			<th rowspan="2">Date</th>
