@@ -1,4 +1,10 @@
 <?php
+/**
+ * Start surveillance
+ *
+ * @package Surveillance
+ */
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -293,6 +299,7 @@ get_header(); // Include the header.php template part.
 			</div>
 		</div>
 		<div class="text-center">
+			<?php wp_nonce_field( 'insert_patient', 'insert_patient_nonce' ); ?>
 			<button type="submit" class="btn btn-primary">Submit</button>
 		</div>
 	</form>

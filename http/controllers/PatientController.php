@@ -29,6 +29,7 @@ class PatientController extends BaseController {
 	 * @return void Outputs a JSON response.
 	 */
 	public function insertPatient( $data ) {
+		check_ajax_referer( 'insert_patient_nonce', 'insert_patient' );
 		// Use $_POST as the data source.
 		$data = $_POST;
 
