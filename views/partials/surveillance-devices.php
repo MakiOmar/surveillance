@@ -8,6 +8,26 @@
 defined( 'ABSPATH' ) || die;
 
 ?>
+<div class="container mt-5">
+	<h2 class="mb-4">Bundle Care Status</h2>
+	<div class="row">
+		<!-- Green square for today's bundle care is set -->
+		<div class="col-md-4 d-flex align-items-center">
+			<div class="bg-success text-white text-center rounded-circle" style="width: 30px; height: 30px; line-height: 30px; font-weight: bold;">G</div>
+			<span class="ms-3">Bundle care is set</span>
+		</div>
+		<!-- Red square for missing bundle care for today -->
+		<div class="col-md-4 d-flex align-items-center">
+		<div class="bg-danger text-white text-center rounded-circle" style="width: 30px; height: 30px; line-height: 30px; font-weight: bold;">R</div>
+		<span class="ms-3">Missing bundle care for today</span>
+		</div>
+		<!-- Black square for missing bundle care for other dates -->
+		<div class="col-md-4 d-flex align-items-center">
+		<div class="bg-dark text-white text-center rounded-circle" style="width: 30px; height: 30px; line-height: 30px; font-weight: bold;">B</div>
+		<span class="ms-3">Missing bundle care for dates.</span>
+		</div>
+	</div>
+	</div>
 <div class="container mt-4">
 	<table class="table table-striped table-bordered">
 		<thead class="thead-dark">

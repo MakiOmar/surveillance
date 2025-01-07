@@ -299,7 +299,7 @@ class PatientController extends BaseController {
 				// Check if ended_at is null and there are no matching records in the bundle table for today.
 				$status        = 'success'; // Default status.
 				$missing_dates = array();
-				$text          = 'dark';
+				$text          = 'light';
 				if ( is_null( $surveillance_device->ended_at ) ) {
 					$today = Carbon::today()->toDateString(); // Today's date in 'Y-m-d' format.
 
@@ -307,7 +307,7 @@ class PatientController extends BaseController {
 						->whereDate( 'created_at', $today )
 						->exists();
 					if ( ! $hasBundleCareToday ) {
-						$status = 'danger';
+						$status = 'secondary';
 					}
 				}
 
@@ -334,7 +334,6 @@ class PatientController extends BaseController {
 					// If missing dates exist, set status to 'danger'.
 					if ( ! empty( $missing_dates ) ) {
 						$status = 'dark';
-						$text   = 'light';
 					}
 				}
 
