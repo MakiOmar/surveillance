@@ -32,8 +32,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="col-9">
 		<div class="tab-content ps-2 bg-light-subtle" id="v-tabsContent">
 			<div class="tab-pane fade show active" id="device" role="tabpanel" aria-labelledby="device-tab">
-				<?php if ( empty( $_GET['show'] ) || 'details-only' !== $_GET['show'] ) { ?>
-					<?php
+				<?php
+				// phpcs:disable WordPress.Security.NonceVerification.Recommended
+				if ( empty( $_GET['show'] ) || 'details-only' !== $_GET['show'] ) {
+
 					load_view(
 						'partials/surveillance-devices-forms',
 						array(
@@ -42,8 +44,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'surveillance_id' => $surveillance_id,
 						)
 					);
-					?>
-				<?php } ?>
+				}
+				// phpcs:enable
+				?>
 				<?php load_view( 'partials/surveillance-devices', array( 'surveillances_devices' => $surveillances_devices ) ); ?>
 
 			</div>

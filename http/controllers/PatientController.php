@@ -1,4 +1,4 @@
-<?php
+<?php //phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 /**
  * Prevent direct access to the file.
  */

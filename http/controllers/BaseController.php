@@ -1,9 +1,9 @@
-<?php
+<?php //phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-//phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+
 /**
  * Base controller
  */
