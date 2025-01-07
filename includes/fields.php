@@ -61,7 +61,24 @@ $device_fields = array(
 
 	),
 	5 => array(
-		'name'   => 'Ventilator',
+		'name'   => 'Adult Ventilator',
+		'fields' => array(
+			array(
+				'field_name' => 'mode',
+				'field_type' => 'text',
+				'required'   => true,
+				'options'    => array(),
+			),
+			array(
+				'field_name' => 'connected_at',
+				'field_type' => 'datetime-local',
+				'required'   => false,
+				'options'    => array(),
+			),
+		),
+	),
+	6 => array(
+		'name'   => 'Pediatric Neonatal Ventilator',
 		'fields' => array(
 			array(
 				'field_name' => 'mode',
