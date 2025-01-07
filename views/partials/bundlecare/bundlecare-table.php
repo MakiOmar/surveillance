@@ -12,10 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-if ( ! isset( $bundle_care_table ) || ! is_array( $bundle_care_table ) || empty( $bundle_care_table ) ) {
+// Decode the bundle_care JSON.
+$bundle_care_json  = $bundle_care_record->bundle_care;
+$bundle_care_table = json_decode( $bundle_care_json, true );
+if ( ! is_array( $bundle_care_table ) || empty( $bundle_care_table ) ) {
 	echo '<p>No data available to display.</p>';
 	return;
 }
+$bundle_care_table['created_at'] = $bundle_care_record->created_at;
 ?>
 
 <table class="bundle-care-table" border="1" style="width: 100%; border-collapse: collapse;">

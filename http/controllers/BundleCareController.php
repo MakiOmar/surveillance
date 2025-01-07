@@ -29,13 +29,13 @@ class BundleCareController extends BaseController {
 		if ( ! $surveillance_device_id ) {
 			$this->jsonResponse( array( 'error' => 'Invalid surveillance.' ), 500 );
 		}
-		$bundle_care_table = $this->getBundleCareBySurvDeviceId( $surveillance_device_id );
+		$bundle_care_record = $this->getBundleCareBySurvDeviceId( $surveillance_device_id );
 		$this->loadView(
 			'partials/bundlecare/form',
 			array(
 				'surveillance_device_id' => $surveillance_device_id,
 				'device_id'              => $device_id,
-				'bundle_care_table'      => $bundle_care_table,
+				'bundle_care_record'     => $bundle_care_record,
 			)
 		);
 		die;
@@ -59,14 +59,8 @@ class BundleCareController extends BaseController {
 			if ( ! $bundle_care_record ) {
 				return false;
 			}
+			return $bundle_care_record;
 
-			// Decode the bundle_care JSON.
-			$bundle_care_json = $bundle_care_record->bundle_care;
-			$bundle_care      = json_decode( $bundle_care_json, true );
-			if ( ! is_array( $bundle_care ) || empty( $bundle_care ) ) {
-				return false;
-			}
-			return $bundle_care;
 		} catch ( Exception $e ) {
 			return false;
 		}
