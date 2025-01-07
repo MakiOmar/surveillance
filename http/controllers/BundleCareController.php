@@ -29,15 +29,50 @@ class BundleCareController extends BaseController {
 		if ( ! $surveillance_device_id ) {
 			$this->jsonResponse( array( 'error' => 'Invalid surveillance.' ), 500 );
 		}
+		$bundle_care_table = $this->getBundleCareBySurvDeviceId( $surveillance_device_id );
 		$this->loadView(
 			'partials/bundlecare/form',
 			array(
 				'surveillance_device_id' => $surveillance_device_id,
 				'device_id'              => $device_id,
+				'bundle_care_table'      => $bundle_care_table,
 			)
 		);
 		die;
 	}
+	/**
+	 * Get and render bundle care for a given surveillance device ID
+	 *
+	 * @param int $surveillance_devices_id The ID of the surveillance device.
+	 * @return string HTML table representing the bundle care data.
+	 */
+	public function getBundleCareBySurvDeviceId( $surveillance_devices_id ) {
+		if ( ! $surveillance_devices_id || ! is_numeric( $surveillance_devices_id ) ) {
+			return false;
+		}
+		try {
+			// Initialize the model.
+			$bundle_care_model = new SurveillanceDeviceBundle();
+
+			// Fetch the record for the given surveillance device ID.
+			$bundle_care_record = $bundle_care_model->where( 'surveillance_devices_id', $surveillance_devices_id )->first();
+			if ( ! $bundle_care_record ) {
+				return false;
+			}
+
+			// Decode the bundle_care JSON.
+			$bundle_care_json = $bundle_care_record->bundle_care;
+			$bundle_care      = json_decode( $bundle_care_json, true );
+			if ( ! is_array( $bundle_care ) || empty( $bundle_care ) ) {
+				return false;
+			}
+			return $bundle_care;
+		} catch ( Exception $e ) {
+			return false;
+		}
+	}
+
+
 	/**
 	 * Insert a surveillance device bundle using HTMX
 	 *
@@ -60,7 +95,7 @@ class BundleCareController extends BaseController {
 
 		foreach ( $_POST as $key => $value ) {
 			// Skip reserved keys or unnecessary fields.
-			if ( in_array( $key, array( '_wpnonce', 'action', 'surveillance_device_id', 'date' ), true ) ) {
+			if ( in_array( $key, array( '_wpnonce', 'action', 'surveillance_device_id', 'date', '_wp_http_referer' ), true ) ) {
 				continue;
 			}
 

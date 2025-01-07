@@ -23,3 +23,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php wp_nonce_field( 'insertbundlecare_nonce', '_wpnonce' ); ?>
 	<button type="submit" class="btn btn-success mt-2">Submit</button>
 </form>
+<?php load_view( 'partials/bundlecare/bundlecare-table', array( 'bundle_care_table' => $bundle_care_table ) ); ?>
