@@ -1,12 +1,36 @@
-<?php
-// Exit if accessed directly.
+<?php //phpcs:disable WordPress.Files.FileName.NotHyphenatedLowercase
+/**
+ * Patient Model
+ *
+ * Represents the patient entity in the application.
+ *
+ * @package PluginNamespace
+ */
+
+// phpcs:disable WordPress.Files.FileName.NotHyphenatedLowercase
 defined( 'ABSPATH' ) || exit;
 
 use Dbout\WpOrm\Orm\AbstractModel;
 
+/**
+ * Class PatientModel
+ *
+ * Represents the patient model and its relationships.
+ */
 class PatientModel extends AbstractModel {
 
-	protected $table    = 'surv_patient';
+	/**
+	 * The database table associated with the model.
+	 *
+	 * @var string
+	 */
+	protected $table = 'surv_patient';
+
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array
+	 */
 	protected $fillable = array(
 		'code',
 		'status',
@@ -26,19 +50,33 @@ class PatientModel extends AbstractModel {
 		'entry',
 		'author_id',
 	);
+
 	/**
-	 * Device fields
+	 * Device fields relationship.
+	 *
+	 * Defines the relationship between a patient and their device fields.
 	 *
 	 * @return mixed
 	 */
 	public function deviceFields() {
 		return $this->hasMany( PatientDeviceField::class, 'patient_id', 'id' );
 	}
+
+	/**
+	 * Surveillances relationship.
+	 *
+	 * Defines the relationship between a patient and their surveillances.
+	 *
+	 * @return mixed
+	 */
 	public function surveillances() {
 		return $this->hasMany( SurveillanceModel::class, 'patient_id', 'id' );
 	}
+
 	/**
-	 * Define the relationship between a patient and their surveillance devices.
+	 * Surveillances devices relationship.
+	 *
+	 * Defines the relationship between a patient and their surveillance devices.
 	 *
 	 * @return mixed
 	 */
