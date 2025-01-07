@@ -56,6 +56,7 @@ defined( 'ABSPATH' ) || die;
 								hx-vals=
 								'{
 								"device_id": "<?php echo esc_js( $device['device_id'] ); ?>",
+								"surveillance_device_id": "<?php echo esc_js( $device['surveillance_device_id'] ); ?>",
 								"getbundlecare": "<?php echo esc_js( wp_create_nonce( 'getbundlecare_nonce' ) ); ?>"
 								}'
 								hx-target="#bundlecare-content"
@@ -86,10 +87,6 @@ defined( 'ABSPATH' ) || die;
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body" id="bundlecare-content" hx-no-swal="false"></div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary">Save changes</button>
-			</div>
 		</div>
 	</div>
 </div>
