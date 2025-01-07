@@ -219,6 +219,35 @@ function create_surveillance_devices_table() {
 }
 
 /**
+ * Create the `surveillance_device_bundle` table upon theme activation.
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
+ */
+function create_surveillance_device_bundle_table() {
+	global $wpdb;
+
+	$table_name                 = $wpdb->prefix . 'surveillance_device_bundle';
+	$surveillance_devices_table = $wpdb->prefix . 'surveillance_devices';
+
+	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) !== $table_name ) {
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$sql = "CREATE TABLE `$table_name` (
+			`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			`surveillance_devices_id` bigint(20) UNSIGNED NOT NULL,
+			`bundle_care` text DEFAULT NULL,
+			`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+			`updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY (`id`),
+			KEY `surveillance_devices_id` (`surveillance_devices_id`),
+			CONSTRAINT `wpap_surveillance_device_bundle_devices_id_fk` FOREIGN KEY (`surveillance_devices_id`) REFERENCES `$surveillance_devices_table` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		) $charset_collate ENGINE=InnoDB;";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $sql );
+	}
+}
+/**
  * Create the `surv_form_field_options` table upon theme activation.
  *
  * @global wpdb $wpdb WordPress database abstraction object.
@@ -306,6 +335,7 @@ function surv_tables() {
 	create_surv_patient_device_fields_table();
 	create_surveillances_table();
 	create_surveillance_devices_table();
+	create_surveillance_device_bundle_table();
 }
 
 // Register the activation hook.
