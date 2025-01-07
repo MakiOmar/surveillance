@@ -6,9 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 //phpcs:disable WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
-use Dbout\WpOrm\Models\Model;
-use Illuminate\Support\Arr;
-use TenQuality\WP\QueryBuilder\QueryBuilder;
 use Carbon\Carbon;
 
 /**
